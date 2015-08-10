@@ -1,7 +1,7 @@
-package scDomain.domain.objects;
+package scDomain.domain.newObjects;
 
-public abstract class SingleDomainKey<K> implements DomainKey {
-    protected K id;
+public abstract class SingleDomainKey<T, O extends DomainObject<O>> implements DomainKey<O> {
+    protected T id;
     
     protected SingleDomainKey() {}
     
@@ -9,7 +9,7 @@ public abstract class SingleDomainKey<K> implements DomainKey {
     public int getFieldCount() {
         return 1;
     }
-    public abstract K getID();
+    public abstract T getID();
     
     @SuppressWarnings("unchecked")
     @Override
