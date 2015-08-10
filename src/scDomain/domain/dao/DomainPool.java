@@ -3,50 +3,22 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package scDomain.data.pools;
+package scDomain.domain.dao;
 /**
  *
  * @author Morgan
  */
-import scDomain.domain.newObjects.*;
+import scDomain.domain.objects.DomainObject;
+import scDomain.domain.objects.DomainKey;
 import java.util.WeakHashMap;
 
-public class NewPool<O extends DomainObject<O>> {
-    private WeakHashMap<DomainKey<O>, O> objectMap;
+public final class DomainPool<O extends DomainObject<O>> {
+    private final WeakHashMap<DomainKey<O>, O> objectMap = new WeakHashMap<DomainKey<O>, O>();
     
-    public static NewPool getInstance(NewPool.Type type) {
-        return type.pool;
-    }
+    DomainPool() {}
     
-    public enum Type {
-        AGENT, DEPARTMENT, ROLE;
-
-        //is it okay to make this public?
-        public final NewPool<?> pool;
-
-        Type() {
-            switch (this) {
-                case AGENT:
-                    pool = new NewPool<Agent>();
-                    break;
-                case DEPARTMENT:
-                    pool = new NewPool<Department>();
-                    break;
-                case ROLE:
-                    pool = new NewPool<Role>();
-                    break;
-                default:
-                    pool = null;
-            }
-        }
-    }
-    
-    private NewPool() {}
-    
-    public O get(DomainKey<O> key) {
-        return objectMap.get(key);
-    }
-    
+    public O get(DomainKey<O> key) { return objectMap.get(key); }
+    public int count() { return objectMap.size(); }
     public boolean containsKey(DomainKey<O> key) {
         return objectMap.containsKey(key);
     }
@@ -67,6 +39,13 @@ public class NewPool<O extends DomainObject<O>> {
         if (key == null) { throw new NullPointerException(); }
         if (!objectMap.containsKey(key)) {
             objectMap.put(key, object);
+        } else if (object != null && objectMap.get(key) == null) {
+            objectMap.put(key, object);
+        }
+    }
+    public void put(O[] objects) {
+        for (O object : objects) {
+            put(object);
         }
     }
     

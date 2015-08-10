@@ -1,30 +1,64 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package scDomain.domain.objects;
 
-public class Role extends DomainObject<Role.RoleKey> {
+/**
+ *
+ * @author Morgan
+ */
+public class Role extends DomainObject<Role> {
+    private String id;
     private String name;
     private short level;
     private boolean onScorecard;
     
-    public Role(Role.RoleKey key) { super(key); }
+    public static class Key extends StringDomainKey<Role> {		
+        public Key(String roleId) { super(roleId); }
+        @Override
+        public Class<Role> getDomainObjectClass() { return Role.class; }
+    }
+    public static class Builder implements DomainBuilder<Role> {
+        private String id;
+        private String name;
+        private short level;
+        private boolean onScorecard;
+        
+        public Builder id(String id) {
+            this.id = id;
+            return this;
+        }
+        public Builder name(String name) {
+            this.name = name;
+            return this;
+        }
+        public Builder level(short level) {
+            this.level = level;
+            return this;
+        }
+        public Builder onScorecard(boolean onScorecard) {
+            this.onScorecard = onScorecard;
+            return this;
+        }
+    }
     
-    public String getRoleId() { return key.id; }
+    public Role(Role.Key key, Role.Builder builder) {
+        super(key, builder);
+        
+        id = builder.id;
+        name = builder.name;
+        level = builder.level;
+        onScorecard = builder.onScorecard;
+    }
     
+    public String getRoleId() { return id; }
     public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
-    
     public short getLevel() { return level; }
-    public void setLevel(short level) { this.level = level; }
-    
     public boolean getOnScorecard() { return onScorecard; }
-    public void setOnScorecard(boolean onScorecard) { this.onScorecard = onScorecard; }
     
     @Override
     public String toString() { return name; }
     public String getFullName() { return name + " (" + level + ")"; }
-    
-    public static class RoleKey extends StringDomainKey {		
-        public RoleKey(String roleId) { super(roleId); }
-        @Override
-        public Class<Role> getDomainObjectClass() { return Role.class; }
-    }
 }

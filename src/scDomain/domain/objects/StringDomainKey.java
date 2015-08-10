@@ -9,7 +9,7 @@ package scDomain.domain.objects;
  *
  * @author Morgan
  */
-public abstract class StringDomainKey extends SingleDomainKey<String> {
+public abstract class StringDomainKey<O extends DomainObject<O>> extends SingleDomainKey<String, O> {
     private int hashCode;
     
     private StringDomainKey() {}

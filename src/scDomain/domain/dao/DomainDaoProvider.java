@@ -3,14 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package scDomain.domain.newObjects;
+
+package scDomain.domain.dao;
 
 /**
  *
- * @author Morgan
+ * @author hayes
  */
-public class TestImplement implements TestInterface<TestObject> {
-    public TestObject get(TestObject.Key key) {
-        return null;
-    }
+public interface DomainDaoProvider {
+    public AgentDao getAgentMapper();
+    public RoleDao getRoleMapper();
 }

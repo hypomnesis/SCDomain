@@ -3,15 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package scDomain.domain.newMappers;
+package scDomain.domain.objects;
 
 /**
  *
  * @author Morgan
  */
-import scDomain.domain.newObjects.Role;
-
-public interface RoleMapper extends DomainMapper<Role, Role.Key> {
-        @Override
-	public Role find(Role.Key key);
+public interface DomainBuilder<O extends DomainObject<O>> {
+    
 }

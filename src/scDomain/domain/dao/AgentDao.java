@@ -3,12 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package scDomain.domain.newObjects;
+package scDomain.domain.dao;
 
 /**
  *
  * @author Morgan
  */
-public interface TestInterface<O extends DomainObject<O>> {
-    public O get(DomainKey<O> key);
-}
+import scDomain.domain.objects.Agent;
+
+public interface AgentDao extends DomainDaoUpdater<Agent, Agent.Key, Agent.Builder> {}

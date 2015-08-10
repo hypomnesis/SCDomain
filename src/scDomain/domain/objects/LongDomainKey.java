@@ -9,7 +9,7 @@ package scDomain.domain.objects;
  *
  * @author Morgan
  */
-public abstract class LongDomainKey extends SingleDomainKey<Long> {
+public abstract class LongDomainKey<O extends DomainObject<O>> extends SingleDomainKey<Long, O> {
     private int hashCode;
     
     private LongDomainKey() {}

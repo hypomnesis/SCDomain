@@ -3,24 +3,18 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package scDomain.data.newDatabase;
+package scDomain.data.database;
 
 /**
  *
  * @author Morgan
  */
+import scDomain.domain.objects.Agent;
+import scDomain.domain.dao.AgentDao;
 import java.sql.*;
-import scDomain.data.pools.NewPool;
-import scDomain.domain.newMappers.*;
-import scDomain.domain.newObjects.*;
 
-public final class AgentDbMapper extends AgentAbstractMapper implements AbstractDbMapper<Agent> {
-    private final Connection connection;
-    private DbMapperUtility util;
-    
-    static String getTable() {
-        return "scweb_sc_agents";
-    }
+public final class AgentDbDao extends DomainDbDao<Agent, Agent.Key> implements AgentDao {
+    static final String TABLE = "scweb_sc_agents";
     
     static Agent populateAgent(ResultSet rs) throws SQLException {
         //TODO:  so much so much.  Add in Role and Dept and figure out where to get lead keys from.
@@ -37,19 +31,15 @@ public final class AgentDbMapper extends AgentAbstractMapper implements Abstract
         return agent;
     }
     
-    protected Agent doFind(Agent.Key key) {
-        return null;
+    public AgentDbDao(Connection connection) {
+        super(connection);
     }
     
-    //Need to find a way to force each concrete mapper to assign a value to newPool.
-    public AgentDbMapper(Connection connection) {
-        super();
-    }
-
+    @Override
     protected PreparedStatement findStatement(Agent.Key key) throws SQLException {
         PreparedStatement findStatement = connection.prepareStatement(
                 "SELECT a.*, d.*, r.*\n"
-                        + "FROM (" + getTable() + " a INNER JOIN scweb_sc_departments d\n"
+                        + "FROM (" + TABLE + " a INNER JOIN scweb_sc_departments d\n"
                         + "\tON a.sa_department = d.sd_department)\n"
                         + "\tINNER JOIN scweb_sc_roles r ON a.sa_role = r.sr_role\n"
                         + "WHERE sa_username = ?"
@@ -60,5 +50,33 @@ public final class AgentDbMapper extends AgentAbstractMapper implements Abstract
 
     protected Agent doLoad(ResultSet rs) throws SQLException {
         return populateAgent(rs);
+    }
+    //All this TODO!!!
+    @Override
+    public Agent add(Agent object) {
+        //pool stuff here.
+        return null;
+    }
+    @Override
+    public Agent add(Agent.Builder builder) {
+        //pool stuff here.
+        return null;
+    }
+    @Override
+    public Agent update(Agent object) {
+        //pool stuff here.
+        return null;
+    }
+    @Override
+    public Agent update(Agent.Key key, Agent.Builder builder) {
+        //pool stuff here.
+        return null;
+    }
+    @Override
+    public void delete(Agent.Key key) {
+        //pool stuff here.
+    }
+    @Override
+    public void delete(Agent object) {
     }
 }

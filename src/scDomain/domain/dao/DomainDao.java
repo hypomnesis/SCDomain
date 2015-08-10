@@ -3,12 +3,15 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package scDomain.domain.newObjects;
+package scDomain.domain.dao;
 
 /**
  *
  * @author Morgan
  */
-public interface DomainBuilder<O extends DomainObject<O>> {
-    
+import scDomain.domain.objects.DomainObject;
+import scDomain.domain.objects.DomainKey;
+
+public interface DomainDao<O extends DomainObject<O>, K extends DomainKey<O>> {
+	public O find(K key);
 }

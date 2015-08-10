@@ -3,13 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package scDomain.domain.newObjects;
+package scDomain.domain.dao;
 
 /**
  *
  * @author Morgan
  */
-public interface DomainKey<O extends DomainObject<O>> {
-    public Class<O> getDomainObjectClass();
-    public int getFieldCount();
-}
+import scDomain.domain.objects.Role;
+
+public interface RoleDao extends DomainDaoFindAll<Role, Role.Key> {}
