@@ -9,9 +9,25 @@ package scDomain.domain.dao;
  *
  * @author Morgan
  */
+import scDomain.domain.objects.DomainBuilder;
 import scDomain.domain.objects.DomainObject;
 import scDomain.domain.objects.DomainKey;
 
-public interface DomainDao<O extends DomainObject<O>, K extends DomainKey<O>> {
-	public O find(K key);
+public interface DomainDao <O extends DomainObject<O>, K extends DomainKey<O>> {
+    public O find(K key);
+    
+    interface FindAll <O extends DomainObject<O>, K extends DomainKey<O>> extends DomainDao<O, K> {
+        public O[] findAll();
+    }
+    
+    interface Updater <O extends DomainObject<O>, K extends DomainKey<O>, B extends DomainBuilder<O>>
+            extends DomainDao<O, K>
+    {
+        public O add(O object);
+        public O add(B builder);
+        public O update(O object);
+        public O update(K key, B builder);
+        public void delete(K key);
+        public void delete(O object);
+    }
 }

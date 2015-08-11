@@ -12,28 +12,14 @@ package scDomain.data.database;
 import scDomain.domain.objects.Agent;
 import scDomain.domain.dao.AgentDao;
 import java.sql.*;
+import javax.sql.DataSource;
+import scDomain.domain.objects.Role;
 
-public final class AgentDbDao extends DomainDbDao<Agent, Agent.Key> implements AgentDao {
+final class AgentDbDao extends DomainDbDao<Agent, Agent.Key> implements AgentDao {
     static final String TABLE = "scweb_sc_agents";
     
-    static Agent populateAgent(ResultSet rs) throws SQLException {
-        //TODO:  so much so much.  Add in Role and Dept and figure out where to get lead keys from.
-        Agent agent = new Agent(new Agent.Key(rs.getString("sa_username")),
-                new Agent.Builder()
-                        .username(rs.getString("sa_username"))
-                        .firstName(rs.getString("sa_firstname"))
-                        .lastName(rs.getString("sa_lastname"))
-                        .email(rs.getString("sa_email"))
-                        .teamLead(new Agent.Key(rs.getString("sa_lead")))
-                        .supervisor(new Agent.Key(rs.getString("sa_supervisor")))
-        );
-        
-        return agent;
-    }
-    
-    public AgentDbDao(Connection connection) {
-        super(connection);
-    }
+    AgentDbDao(DataSource datasource) { super(datasource); }
+    AgentDbDao(Connection connection) { super(connection); }
     
     @Override
     protected PreparedStatement findStatement(Agent.Key key) throws SQLException {
@@ -48,8 +34,20 @@ public final class AgentDbDao extends DomainDbDao<Agent, Agent.Key> implements A
         return findStatement;
     }
 
+    @Override
     protected Agent doLoad(ResultSet rs) throws SQLException {
-        return populateAgent(rs);
+        Agent agent = new Agent(new Agent.Key(rs.getString("sa_username")),
+            new Agent.Builder().
+                    username(rs.getString("sa_username")).
+                    firstName(rs.getString("sa_firstname")).
+                    lastName(rs.getString("sa_lastname")).
+                    email(rs.getString("sa_email")).
+                    teamLead(new Agent.Key(rs.getString("sa_lead"))).
+                    supervisor(new Agent.Key(rs.getString("sa_supervisor"))).
+                    role(new RoleDbDao(connection).find(new Role.Key(rs.getString("sa_role"))))
+        );
+        
+        return agent;
     }
     //All this TODO!!!
     @Override

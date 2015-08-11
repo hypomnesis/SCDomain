@@ -11,4 +11,4 @@ package scDomain.domain.dao;
  */
 import scDomain.domain.objects.Agent;
 
-public interface AgentDao extends DomainDaoUpdater<Agent, Agent.Key, Agent.Builder> {}
+public interface AgentDao extends DomainDao.Updater<Agent, Agent.Key, Agent.Builder> {}

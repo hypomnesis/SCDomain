@@ -12,8 +12,11 @@ package scDomain.domain.objects;
 public abstract class StringDomainKey<O extends DomainObject<O>> extends SingleDomainKey<String, O> {
     private int hashCode;
     
-    private StringDomainKey() {}
-    public StringDomainKey(String id) { this.id = id; }
+    //StringDomainKey(DomainObject.Builder<O> builder) { super(builder); }
+    StringDomainKey(DomainBuilder<O> builder) { super(builder); }
+    
+    /*private StringDomainKey() {}
+    public StringDomainKey(String id) { this.id = id; }*/
     @Override
     public String getID() { return id; }
     @Override
@@ -28,7 +31,7 @@ public abstract class StringDomainKey<O extends DomainObject<O>> extends SingleD
     @Override
     public int hashCode() {
         if (hashCode == 0) {
-            hashCode = (31 * ((31 * 17) + id.hashCode())) + getDomainObjectClass().hashCode();
+            //hashCode = (31 * ((31 * 17) + id.hashCode())) + getDomainObjectClass().hashCode();
         }
         return hashCode;
     }

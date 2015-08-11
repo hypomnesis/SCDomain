@@ -1,11 +1,13 @@
 package scDomain.domain.objects;
 
-public abstract class SingleDomainKey<T, O extends DomainObject<O>> implements DomainKey<O> {
+//public abstract class SingleDomainKey<T, O extends DomainObject<O>> extends DomainObject.Key<O> {
+public abstract class SingleDomainKey<T, O extends DomainObject<O>> extends DomainKey<O> {
     protected T id;
     
-    protected SingleDomainKey() {}
+    //SingleDomainKey(DomainObject.Builder<O> builder) { super(builder); }
+    SingleDomainKey(DomainBuilder<O> builder) { super(builder); }
     
-    @Override
+    //@Override
     public int getFieldCount() {
         return 1;
     }

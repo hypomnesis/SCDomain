@@ -11,6 +11,6 @@ package scDomain.domain.dao;
  * @author hayes
  */
 public interface DomainDaoProvider {
-    public AgentDao getAgentMapper();
-    public RoleDao getRoleMapper();
+    public AgentDao getAgentDao();
+    public RoleDao getRoleDao();
 }

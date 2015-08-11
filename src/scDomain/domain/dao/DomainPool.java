@@ -12,7 +12,7 @@ import scDomain.domain.objects.DomainObject;
 import scDomain.domain.objects.DomainKey;
 import java.util.WeakHashMap;
 
-public final class DomainPool<O extends DomainObject<O>> {
+final class DomainPool<O extends DomainObject<O>> {
     private final WeakHashMap<DomainKey<O>, O> objectMap = new WeakHashMap<DomainKey<O>, O>();
     
     DomainPool() {}

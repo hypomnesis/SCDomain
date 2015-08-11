@@ -20,11 +20,17 @@ public class Role extends DomainObject<Role> {
         @Override
         public Class<Role> getDomainObjectClass() { return Role.class; }
     }
-    public static class Builder implements DomainBuilder<Role> {
+    public static class Builder extends DomainObject.Builder<Role> {
         private String id;
         private String name;
         private short level;
         private boolean onScorecard;
+        
+        Role.Key getKey() { return new Role.Key(id); }
+        boolean isValid() {
+            //TODO!!!
+            return true;
+        }
         
         public Builder id(String id) {
             this.id = id;
@@ -44,8 +50,8 @@ public class Role extends DomainObject<Role> {
         }
     }
     
-    public Role(Role.Key key, Role.Builder builder) {
-        super(key, builder);
+    public Role(Role.Builder builder) {
+        super(builder);
         
         id = builder.id;
         name = builder.name;

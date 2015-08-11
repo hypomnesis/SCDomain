@@ -1,24 +1,26 @@
 package scDomain.domain.objects;
 
 public class Agent extends DomainObject<Agent> {
-    private String username;
-    private String firstName;
-    private String lastName;
-    private String displayName = null;
-    private Department department;
-    private Role role;
-    private String email;
+    private final String username;
+    private final String firstName;
+    private final String lastName;
+    private final String displayName;
+    private final Department department;
+    private final Role role;
+    private final String email;
     //Do I want them to have full on Agent objects as well and lazy load them?
-    private Agent.Key teamLead;
-    private Agent.Key supervisor;
+    private final Agent.Key teamLead;
+    private final Agent.Key supervisor;
         
-    public static class Key extends StringDomainKey<Agent> {		
-        public Key(String username) { super(username); }
-        @Override
-        public Class<Agent> getDomainObjectClass() { return Agent.class; }
+    public static class Key extends StringDomainKey<Agent> {
+        Key(Agent.Builder builder) { 
+            super(builder);
+            id = builder.username;
+        }
     }
     
-    public static class Builder implements DomainBuilder<Agent> {
+    //public static class Builder extends DomainObject.Builder<Agent> {
+    public static class Builder extends DomainBuilder<Agent> {
         private String username;
         private String firstName;
         private String lastName;
@@ -28,6 +30,12 @@ public class Agent extends DomainObject<Agent> {
         private Agent.Key teamLead;
         private Agent.Key supervisor;
         
+        boolean isValid() {
+            //TODO
+            return true;
+        }
+        
+        Agent.Key getKey() { return new Agent.Key(this); }
         public Builder username(String username) {
             this.username = username;
             return this;
@@ -62,8 +70,8 @@ public class Agent extends DomainObject<Agent> {
         }
     }
     
-    public Agent(Agent.Key key, Agent.Builder builder) {
-        super(key, builder);
+    public Agent(Agent.Builder builder) {
+        super(builder);
         
         username = builder.username;
         firstName = builder.firstName;

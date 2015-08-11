@@ -21,12 +21,17 @@ public class Department extends DomainObject<Department> {
         @Override
         public Class<Department> getDomainObjectClass() { return Department.class; }
     }
-    public static class Builder implements DomainBuilder<Department> {
+    public static class Builder extends DomainObject.Builder<Department> {
         private String id;
         private String name;
         private String email = null;
         private Agent.Key head = null;
         private String hrPartner = null;
+        
+        Department.Key getKey() {
+            return new Department.Key(id);
+        }
+        boolean isValid() { return true; }
         
         public Builder id(String id) {
             this.id = id;
@@ -50,8 +55,8 @@ public class Department extends DomainObject<Department> {
         }
     }
     
-    public Department(Department.Key key, Department.Builder builder) {
-        super(key, builder);
+    public Department(Department.Builder builder) {
+        super(builder);
         
         id = builder.id;
         name = builder.name;

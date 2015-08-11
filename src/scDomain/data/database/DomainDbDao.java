@@ -12,37 +12,57 @@ package scDomain.data.database;
 import scDomain.domain.objects.DomainObject;
 import scDomain.domain.objects.DomainKey;
 import java.sql.*;
+import javax.sql.DataSource;
 import scDomain.domain.dao.*;
 
-public abstract class DomainDbDao <O extends DomainObject<O>, K extends DomainKey<O>> implements DomainDao<O, K> {
+abstract class DomainDbDao <O extends DomainObject<O>, K extends DomainKey<O>> implements DomainDao<O, K> {
     protected final Connection connection;
     
     protected abstract PreparedStatement findStatement(K key) throws SQLException;
     protected abstract O doLoad(ResultSet rs) throws SQLException;
     
     //Eventually let it get its own connection?
+    protected DomainDbDao(DataSource datasource) {
+        if (datasource == null) { throw new NullPointerException(); }
+        try {
+            this.connection = datasource.getConnection();
+        } catch(SQLException e) {
+            //No clue if this is the best way of dealing with this.
+            throw new IllegalArgumentException(e.getMessage(), e.getCause());
+        }
+    }
     protected DomainDbDao(Connection connection) {
+        if (connection == null) { throw new NullPointerException(); }
         this.connection = connection;
     }
     
     //Need to review exceptions.
+    @Override
     public O find(K key) {
         //Check for already loaded objects here.
         O object = null;
-        PreparedStatement findStatement = null;
         ResultSet rs = null;
         
         try {
-            findStatement = findStatement(key);
-            rs = findStatement.executeQuery();
-            rs.next();
+            PreparedStatement findStatement = findStatement(key);
+            try {
+                rs = findStatement.executeQuery();
+                try {
+                    rs.next();
 
-            object = load(key, rs);
-            //clean resources der I ferget how. I want to put this in finally block.
-            //also, I should close this with an object clean up in case more db actions are required...
-            //or do i keep them alive?  who knows?
-            findStatement.close();
-            connection.close();		//Don't want to close connection pool connection.  Work with datasource?
+                    object = load(key, rs);
+                } catch (SQLException e) {
+                    //something
+                } finally {
+                    rs.close();
+                }
+            } catch (SQLException e) {
+                //something
+            } finally {
+                findStatement.close();
+        }
+        //should I close the connection or keep it alive for other processes?
+        connection.close();		//Don't want to close connection pool connection.  Work with datasource?
         } catch (SQLException e) {
             //Better solution needed.
             e.printStackTrace();

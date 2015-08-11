@@ -17,36 +17,14 @@ import scDomain.domain.objects.Agent;
 public enum DomainDaoFactory implements DomainDaoProvider {
     INSTANCE;
     
-    private DomainDaoProvider provider;
-    
-    public enum Type {
-        AGENT, DEPARTMENT, ROLE;
-        
-        private final DomainPool pool;
-        
-        Type() {
-            switch (this) {
-                case AGENT:
-                    pool = new DomainPool<Agent>();
-                    break;
-                case DEPARTMENT:
-                    pool = new DomainPool<Department>();
-                    break;
-                case ROLE:
-                    pool = new DomainPool<Role>();
-                    break;
-                default:
-                    pool = null;
-            }
-        }
-    }
+    private DomainDaoProvider provider = null;
     
     private static class AgentDaoWrapper extends DomainDaoWrapper.Updater<Agent, Agent.Key, Agent.Builder> implements AgentDao {
         private AgentDaoWrapper(AgentDao mapper, DomainPool<Agent> pool) {
             super(mapper, pool);
         }
     }
-    private static class RoleDaoWrapper extends DomainDaoWrapper.FindAll<Role, Role.Key> implements RoleDao {
+    private static class RoleDaoWrapper extends DomainDaoWrapper.FindAll.Only<Role, Role.Key, Role.Builder> implements RoleDao {
         private RoleDaoWrapper(RoleDao mapper, DomainPool<Role> pool) {
             super(mapper, pool);
         }
@@ -59,11 +37,13 @@ public enum DomainDaoFactory implements DomainDaoProvider {
     }
     
     @Override
-    public AgentDao getAgentMapper() {
-        return new AgentDaoWrapper(provider.getAgentMapper(), Type.AGENT.pool);
+    public AgentDao getAgentDao() {
+        if (provider == null) { throw new NullPointerException(); }
+        return new AgentDaoWrapper(provider.getAgentDao(), Type.AGENT.pool);
     }
     @Override
-    public RoleDao getRoleMapper() {
-        return new RoleDaoWrapper(provider.getRoleMapper(), Type.ROLE.pool);
+    public RoleDao getRoleDao() {
+        if (provider == null) { throw new NullPointerException(); }
+        return new RoleDaoWrapper(provider.getRoleDao(), Type.ROLE.pool);
     }
 }

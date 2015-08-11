@@ -9,6 +9,7 @@ package scDomain.domain.objects;
  *
  * @author Morgan
  */
-public interface DomainBuilder<O extends DomainObject<O>> {
-    
+public abstract class DomainBuilder<O extends DomainObject<O>> {
+    abstract DomainKey<O> getKey();
+    abstract boolean isValid();
 }

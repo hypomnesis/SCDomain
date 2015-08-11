@@ -11,4 +11,4 @@ package scDomain.domain.dao;
  */
 import scDomain.domain.objects.Role;
 
-public interface RoleDao extends DomainDaoFindAll<Role, Role.Key> {}
+public interface RoleDao extends DomainDao.FindAll<Role, Role.Key> {}

@@ -9,7 +9,10 @@ package scDomain.domain.objects;
  *
  * @author Morgan
  */
-public interface DomainKey<O extends DomainObject<O>> {
-    public Class<O> getDomainObjectClass();
-    public int getFieldCount();
+public abstract class DomainKey<O extends DomainObject<O>> {
+    private DomainKey() {}
+    DomainKey(DomainBuilder<O> builder) {}
+    
+    /*public abstract Class<O> getDomainObjectClass();
+    public abstract int getFieldCount();*/
 }

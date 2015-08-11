@@ -13,17 +13,23 @@ import scDomain.domain.objects.DomainKey;
  *
  * @author Morgan
  */
-abstract class DomainDaoWrapper<O extends DomainObject<O>, K extends DomainKey<O>> implements DomainDao<O, K> {
-    private final DomainDao<O, K> mapper;
+abstract class DomainDaoWrapper<O extends DomainObject<O>, K extends DomainKey<O>, B extends DomainBuilder<O>>
+        extends DomainAbstractDao<O, K, B>
+{
+    protected final DomainAbstractDao<O, K, B> mapper;
     protected final DomainPool<O> pool;
     
     private DomainDaoWrapper() { throw new AbstractMethodError(); }
-    DomainDaoWrapper(DomainDao<O, K> mapper, DomainPool<O> pool) {
+    DomainDaoWrapper(DomainAbstractDao<O, K, B> mapper, DomainPool<O> pool) {
+        if (mapper == null || pool == null) {
+            throw new NullPointerException();
+        }
         this.mapper = mapper;
         this.pool = pool;
     }
     @Override
-    public final O find(K key) {
+    public O find(K key) {
+        if (key == null) { throw new NullPointerException(); }
         O object = pool.get(key);
         
         if (object == null) { object = mapper.find(key); }
@@ -32,12 +38,17 @@ abstract class DomainDaoWrapper<O extends DomainObject<O>, K extends DomainKey<O
     }
     //can't think of a way to port the load or doLoad up here to enforce this functionality.
     //I was told to check again after pulling data but before loading.. i forget why.  Look up and document.
-    protected final O loadCheck(K key) { return pool.get(key); }
+    @Override
+    protected B doFind(K key) { return mapper.doFind(key); }
+    @Override
+    protected O load(B builder) { return mapper.load(builder); }
     
-    static abstract class FindAll<O extends DomainObject<O>, K extends DomainKey<O>> extends DomainDaoWrapper<O, K> implements DomainDaoFindAll<O, K> {
-        private final DomainDaoFindAll<O, K> finder;
+    static abstract class FindAll<O extends DomainObject<O>, K extends DomainKey<O>, B extends DomainBuilder<O>>
+            extends DomainDaoWrapper<O, K, B> implements DomainDao.FindAll<O, K>
+    {
+        private final DomainDaoWrapper.FindAll<O, K, B> finder;
         
-        FindAll(DomainDaoFindAll<O, K> mapper, DomainPool<O> pool) {
+        FindAll(DomainDaoWrapper.FindAll<O, K, B> mapper, DomainPool<O> pool) {
             super(mapper, pool);
             this.finder = mapper;
         }
@@ -46,14 +57,28 @@ abstract class DomainDaoWrapper<O extends DomainObject<O>, K extends DomainKey<O
         public O[] findAll() {
             return finder.findAll();
         }
+        static abstract class Only<O extends DomainObject<O>, K extends DomainKey<O>, B extends DomainBuilder<O>>
+                extends DomainDaoWrapper.FindAll<O, K, B> implements DomainDao.FindAll<O, K>
+        {
+            Only(DomainDaoWrapper.FindAll<O, K, B> mapper, DomainPool<O> pool) {
+                super(mapper, pool);
+            }
+            
+            @Override
+            public O find(K key) {
+                if (pool.count() == 0) { findAll(); }
+                
+                return super.find(key);
+            }
+        }
     }
     static abstract class Updater<O extends DomainObject<O>, K extends DomainKey<O>, B extends DomainBuilder<O>>
-            extends DomainDaoWrapper<O, K> implements DomainDaoUpdater<O, K, B>
+            extends DomainDaoWrapper<O, K, B> implements DomainDao.Updater<O, K, B>
     {
-        private final DomainDaoUpdater<O, K, B> updater;
+        private final DomainDaoWrapper.Updater<O, K, B> updater;
         
         private Updater() { throw new AbstractMethodError(); }
-        Updater(DomainDaoUpdater<O, K, B> mapper, DomainPool<O> pool) {
+        Updater(DomainDaoWrapper.Updater<O, K, B> mapper, DomainPool<O> pool) {
             super(mapper, pool);
             this.updater = mapper;
         }
