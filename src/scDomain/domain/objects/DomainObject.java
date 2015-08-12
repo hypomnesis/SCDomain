@@ -10,6 +10,7 @@ import java.util.WeakHashMap;
 /**
  *
  * @author Morgan
+ * @param <O>
  */
 public interface DomainObject<O extends DomainObject<O>> {
     public Key<O> getKey();
@@ -19,7 +20,7 @@ public interface DomainObject<O extends DomainObject<O>> {
         public O getObject();
     }
     
-    public enum Type {
+    public static enum Type {
         AGENT, DEPARTMENT, ROLE;
         
         public final Pool pool;
@@ -41,7 +42,7 @@ public interface DomainObject<O extends DomainObject<O>> {
         }
         
         public static final class Pool<O extends DomainObject<O>> {
-            private final WeakHashMap<Key<O>, O> objectMap = new WeakHashMap<Key<O>, O>();
+            private final WeakHashMap<Key<O>, O> objectMap = new WeakHashMap<>();
             
             private Pool() {}
             

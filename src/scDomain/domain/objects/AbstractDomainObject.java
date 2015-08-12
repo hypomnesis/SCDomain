@@ -28,8 +28,8 @@ abstract class AbstractDomainObject<O extends DomainObject<O>> implements Domain
     
     static abstract class Key<O extends DomainObject<O>> implements DomainObject.Key<O> {
         protected int hashCode;
-
-        private Key() {}
+        
+        Key() {}
         Key(Builder<O> builder) {
             if (builder == null) { throw new NullPointerException(); }
         }

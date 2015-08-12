@@ -44,7 +44,7 @@ final class AgentDbDao extends DomainDbDao<Agent, Agent.Key> implements AgentDao
                 teamLead(new Agent.Key(rs.getString("sa_lead"))).
                 supervisor(new Agent.Key(rs.getString("sa_supervisor"))).
                 role(new RoleDbDao(connection).find(new Role.Key(rs.getString("sa_role")))).
-                g
+                getObject();
         
         return agent;
     }

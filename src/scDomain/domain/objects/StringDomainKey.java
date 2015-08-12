@@ -10,6 +10,11 @@ package scDomain.domain.objects;
  * @author Morgan
  */
 abstract class StringDomainKey<O extends AbstractDomainObject<O>> extends SingleDomainKey<String, O> {
+    public StringDomainKey(String id) {
+        super(id);
+        //do i want to do this?
+        if (id.length() == 0) { throw new IllegalArgumentException(); }
+    }
     StringDomainKey(AbstractDomainObject.Builder<O> builder) { super(builder); }
     
     public String getID() { return id; }

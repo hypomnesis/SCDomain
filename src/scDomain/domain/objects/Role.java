@@ -28,6 +28,7 @@ public final class Role extends AbstractDomainObject<Role> implements DomainObje
     public String toString() { return name; }
     
     public static final class Key extends StringDomainKey<Role> implements DomainObject.Key<Role> {
+        public Key(String id) { super(id); }
         Key(Role.Builder builder) { 
             super(builder);
             if (builder.id == null) { throw new NullPointerException(); }

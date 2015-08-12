@@ -17,9 +17,10 @@ public enum DbDaoProvider implements DomainDaoProvider {
     
     private DataSource datasource = null;
     
-    public void setDataSource(DataSource datasource) {
+    public DomainDaoProvider setDataSource(DataSource datasource) {
         if (datasource == null) { throw new NullPointerException(); }
         this.datasource = datasource;
+        return this;
     }
     
     @Override

@@ -12,6 +12,10 @@ package scDomain.domain.objects;
 abstract class SingleDomainKey<T, O extends AbstractDomainObject<O>> extends AbstractDomainObject.Key<O> {
     protected T id;
     
+    public SingleDomainKey(T id) {
+        if (id == null) { throw new NullPointerException(); }
+        this.id = id;
+    }
     SingleDomainKey(AbstractDomainObject.Builder<O> builder) { super(builder); }
     
     @Override

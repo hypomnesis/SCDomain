@@ -31,6 +31,7 @@ public final class Agent extends AbstractDomainObject<Agent> {
     }
     
     public final static class Key extends StringDomainKey<Agent> {
+        public Key(String id) { super(id); }
         Key(Agent.Builder builder) {
             super(builder);
             if (builder.username == null) { throw new NullPointerException(); }

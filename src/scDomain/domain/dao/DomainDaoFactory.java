@@ -28,9 +28,10 @@ public enum DomainDaoFactory implements DomainDaoProvider {
         }
     }
     
-    public void setProvider(DomainDaoProvider provider) {
+    public DomainDaoProvider setProvider(DomainDaoProvider provider) {
         if (provider == null) { throw new NullPointerException(); }
         this.provider = provider;
+        return this;
     }
     
     @Override
