@@ -9,29 +9,62 @@ package scDomain.domain.objects;
  *
  * @author Morgan
  */
-public class Department extends DomainObject<Department> {
+public final class Department extends AbstractDomainObject<Department> {
     private String id;
     private String name;
     private String email;
     private Agent.Key head;
     private String hrPartner;
     
-    public static class Key extends StringDomainKey<Department> {		
-        public Key(String id) { super(id); }
+    private Department(Department.Builder builder) { super(builder); }
+    
+    public String getId() { return id; }
+    public String getName() { return name; }
+    public String email() { return email; }
+    public Agent.Key getDeptHead() { return head; }
+    public String hrPartner() { return hrPartner; }
+    
+    @Override
+    public String toString() { return name; }
+    
+    public static final class Key extends StringDomainKey<Department> {
+        Key(Department.Builder builder) { 
+            super(builder);
+            if (builder.id == null) { throw new NullPointerException(); }
+            
+            id = builder.id;
+        }
         @Override
-        public Class<Department> getDomainObjectClass() { return Department.class; }
+        public Class<Department> getDomainClass() { return Department.class; }
     }
-    public static class Builder extends DomainObject.Builder<Department> {
+    public static final class Builder extends AbstractDomainObject.Builder<Department> {
         private String id;
         private String name;
         private String email = null;
         private Agent.Key head = null;
         private String hrPartner = null;
         
-        Department.Key getKey() {
-            return new Department.Key(id);
+        @Override
+        DomainObject.Type getType() { return DomainObject.Type.DEPARTMENT; }
+        @Override
+        Department.Key getKey() { return new Department.Key(this); }
+        @Override
+        Department doGetObject() {
+            Department dept = new Department(this);
+            
+            dept.id = id;
+            dept.name = name;
+            dept.email = email;
+            dept.head = head;
+            dept.hrPartner = hrPartner;
+            
+            return dept;
         }
-        boolean isValid() { return true; }
+        @Override
+        boolean isValid() {
+            //TODO
+            return true;
+        }
         
         public Builder id(String id) {
             this.id = id;
@@ -54,23 +87,4 @@ public class Department extends DomainObject<Department> {
             return this;
         }
     }
-    
-    public Department(Department.Builder builder) {
-        super(builder);
-        
-        id = builder.id;
-        name = builder.name;
-        email = builder.email;
-        head = builder.head;
-        hrPartner = builder.hrPartner;
-    }
-    
-    public String getId() { return id; }
-    public String getName() { return name; }
-    public String getEmail() { return email; }
-    public Agent.Key getDepartmentHead() { return head; }
-    public String getHrPartner() { return hrPartner; }
-    
-    @Override
-    public String toString() { return name; }
 }

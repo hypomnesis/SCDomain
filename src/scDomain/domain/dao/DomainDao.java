@@ -5,22 +5,22 @@
  */
 package scDomain.domain.dao;
 
+import scDomain.domain.objects.DomainObject;
+
 /**
  *
  * @author Morgan
+ * @param <O>
+ * @param <K>
  */
-import scDomain.domain.objects.DomainBuilder;
-import scDomain.domain.objects.DomainObject;
-import scDomain.domain.objects.DomainKey;
-
-public interface DomainDao <O extends DomainObject<O>, K extends DomainKey<O>> {
+public interface DomainDao <O extends DomainObject<O>, K extends DomainObject.Key<O>> {
     public O find(K key);
     
-    interface FindAll <O extends DomainObject<O>, K extends DomainKey<O>> extends DomainDao<O, K> {
+    interface FindAll <O extends DomainObject<O>, K extends DomainObject.Key<O>> extends DomainDao<O, K> {
         public O[] findAll();
     }
     
-    interface Updater <O extends DomainObject<O>, K extends DomainKey<O>, B extends DomainBuilder<O>>
+    interface Updater <O extends DomainObject<O>, K extends DomainObject.Key<O>, B extends DomainObject.Builder<O>>
             extends DomainDao<O, K>
     {
         public O add(O object);

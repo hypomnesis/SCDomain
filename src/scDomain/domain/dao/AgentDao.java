@@ -5,10 +5,11 @@
  */
 package scDomain.domain.dao;
 
+import scDomain.domain.objects.Agent;
+
 /**
  *
  * @author Morgan
  */
-import scDomain.domain.objects.Agent;
 
 public interface AgentDao extends DomainDao.Updater<Agent, Agent.Key, Agent.Builder> {}

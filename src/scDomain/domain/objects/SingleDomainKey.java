@@ -1,26 +1,31 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package scDomain.domain.objects;
 
-//public abstract class SingleDomainKey<T, O extends DomainObject<O>> extends DomainObject.Key<O> {
-public abstract class SingleDomainKey<T, O extends DomainObject<O>> extends DomainKey<O> {
+/**
+ *
+ * @author Morgan
+ */
+abstract class SingleDomainKey<T, O extends AbstractDomainObject<O>> extends AbstractDomainObject.Key<O> {
     protected T id;
     
-    //SingleDomainKey(DomainObject.Builder<O> builder) { super(builder); }
-    SingleDomainKey(DomainBuilder<O> builder) { super(builder); }
+    SingleDomainKey(AbstractDomainObject.Builder<O> builder) { super(builder); }
     
-    //@Override
-    public int getFieldCount() {
-        return 1;
-    }
-    public abstract T getID();
-    
-    @SuppressWarnings("unchecked")
     @Override
     public boolean equals(Object object) {
-        if (this == object ) { return true; }
-        if (object == null || object.getClass() != this.getClass() ) { return false; }
+        if (!super.equals(object)) { return false; }
+        if ( !(object instanceof SingleDomainKey)) { return false; }
         
-        return true;
+        return this.id.getClass() == ((SingleDomainKey) object).id.getClass();
     }
     @Override
-    public abstract int hashCode();
+    public final int hashCode() {
+        if (hashCode == 0) {
+            hashCode += (31 * super.hashCode()) + id.hashCode();
+        }
+        return hashCode;
+    }
 }

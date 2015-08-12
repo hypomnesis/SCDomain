@@ -9,30 +9,15 @@ package scDomain.domain.objects;
  *
  * @author Morgan
  */
-public abstract class StringDomainKey<O extends DomainObject<O>> extends SingleDomainKey<String, O> {
-    private int hashCode;
+abstract class StringDomainKey<O extends AbstractDomainObject<O>> extends SingleDomainKey<String, O> {
+    StringDomainKey(AbstractDomainObject.Builder<O> builder) { super(builder); }
     
-    //StringDomainKey(DomainObject.Builder<O> builder) { super(builder); }
-    StringDomainKey(DomainBuilder<O> builder) { super(builder); }
-    
-    /*private StringDomainKey() {}
-    public StringDomainKey(String id) { this.id = id; }*/
-    @Override
     public String getID() { return id; }
     @Override
     //Super checks parameter type.
-    public boolean equals(Object object) {
+    public final boolean equals(Object object) {
         if (!super.equals(object)) { return false; }
         
-        StringDomainKey key = (StringDomainKey) object;
-        
-        return id.equals(key.id);
-    }
-    @Override
-    public int hashCode() {
-        if (hashCode == 0) {
-            //hashCode = (31 * ((31 * 17) + id.hashCode())) + getDomainObjectClass().hashCode();
-        }
-        return hashCode;
+        return this.id.equals(((StringDomainKey) object).id);
     }
 }

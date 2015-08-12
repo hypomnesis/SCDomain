@@ -9,27 +9,15 @@ package scDomain.domain.objects;
  *
  * @author Morgan
  */
-public abstract class LongDomainKey<O extends DomainObject<O>> extends SingleDomainKey<Long, O> {
-    private int hashCode;
+abstract class LongDomainKey<O extends AbstractDomainObject<O>> extends SingleDomainKey<Long, O> {
+    LongDomainKey(AbstractDomainObject.Builder<O> builder) { super(builder); }
     
-    private LongDomainKey() {}
-    public LongDomainKey(Long id) { this.id = id; }
-    @Override
     public Long getID() { return id; }
     @Override
     //Super checks parameter type.
-    public boolean equals(Object object) {
+    public final boolean equals(Object object) {
         if (!super.equals(object)) { return false; }
         
-        LongDomainKey key = (LongDomainKey) object;
-        
-        return id.equals(key.id);
-    }
-    @Override
-    public int hashCode() {
-        if (hashCode == 0) {
-            hashCode = (31 * ((31 * 17) + id.hashCode())) + getDomainObjectClass().hashCode();
-        }
-        return hashCode;
+        return this.id.equals(((LongDomainKey) object).id);
     }
 }

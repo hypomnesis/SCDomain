@@ -19,15 +19,12 @@ final class RoleDbDao extends DomainDbDao<Role, Role.Key> implements RoleDao {
     
     static Role populateRole(ResultSet rs) throws SQLException {
         //TODO:  so much so much.  Add in Role and Dept and figure out where to get lead keys from.
-        Role agent = new Role(new Role.Key(rs.getString("sr_role")),
-                new Role.Builder().
-                        id(rs.getString("sr_role")).
-                        name(rs.getString("sr_name")).
-                        level(rs.getShort("sr_level")).
-                        onScorecard(rs.getString("sr_scorecard").equalsIgnoreCase("Y"))
-        );
-        
-        return agent;
+        return new Role.Builder().
+                id(rs.getString("sr_role")).
+                name(rs.getString("sr_name")).
+                level(rs.getShort("sr_level")).
+                onScorecard(rs.getString("sr_scorecard").equalsIgnoreCase("Y")).
+                getObject();
     }
     
     RoleDbDao(DataSource datasource) { super(datasource); }

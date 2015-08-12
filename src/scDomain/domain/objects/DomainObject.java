@@ -11,53 +11,43 @@ import java.util.WeakHashMap;
  *
  * @author Morgan
  */
-public abstract class DomainObject<O extends DomainObject<O>> {
-    //protected final DomainObject.Key<O> key;
-    protected final DomainKey<O> key;
+public interface DomainObject<O extends DomainObject<O>> {
+    public Key<O> getKey();
     
-    @SuppressWarnings("unused")
-    private DomainObject() { throw new NullPointerException(); }
-    //public DomainObject(DomainObject.Builder<O> builder) {
-    public DomainObject(DomainBuilder<O> builder) {
-        if (builder == null) { throw new NullPointerException(); }
-        if (!builder.isValid()) { throw new IllegalArgumentException(); }
-        
-        this.key = builder.getKey();
+    public static interface Key<O extends DomainObject<O>> {}
+    public static interface Builder<O extends DomainObject<O>> {
+        public O getObject();
     }
-    
-    //public DomainObject.Key<O> getKey() { return key; }
-    public DomainKey<O> getKey() { return key; }
     
     public enum Type {
         AGENT, DEPARTMENT, ROLE;
         
-        private final DomainPool pool;
+        public final Pool pool;
         
         Type() {
             switch (this) {
                 case AGENT:
-                    pool = new DomainPool<Agent>();
+                    pool = new Pool<Agent>();
                     break;
                 case DEPARTMENT:
-                    pool = new DomainPool<Department>();
+                    pool = new Pool<Department>();
                     break;
                 case ROLE:
-                    pool = new DomainPool<Role>();
+                    pool = new Pool<Role>();
                     break;
                 default:
                     pool = null;
             }
         }
         
-        public static final class DomainPool<O extends DomainObject<O>> {
-            private final WeakHashMap<DomainKey<O>, O> objectMap = new WeakHashMap<DomainKey<O>, O>();
-            //private final WeakHashMap<K, O> objectMap = new WeakHashMap<K, O>();
+        public static final class Pool<O extends DomainObject<O>> {
+            private final WeakHashMap<Key<O>, O> objectMap = new WeakHashMap<Key<O>, O>();
             
-            private DomainPool() {}
-            //Switch between DomainObject.Key and DomainKey
-            public O get(DomainKey<O> key) { return objectMap.get(key); }
+            private Pool() {}
+            
+            public O get(Key<O> key) { return objectMap.get(key); }
             public int count() { return objectMap.size(); }
-            public boolean containsKey(DomainKey<O> key) {
+            public boolean containsKey(Key<O> key) {
                 return objectMap.containsKey(key);
             }
             public boolean containsObjectKey(O object) {
@@ -66,18 +56,19 @@ public abstract class DomainObject<O extends DomainObject<O>> {
             public boolean containsValue(O object) {
                 return objectMap.containsValue(object);
             }
-            public void put(DomainKey<O> key) {
+            public void put(Key<O> key) {
                 if (key == null) { throw new NullPointerException(); }
                 if (!objectMap.containsKey(key)) {
                     objectMap.put(key, null);
                 }
             }
             public void put(O object) {
-                DomainKey<O> key = object.getKey();
+                if (object == null) { throw new NullPointerException(); }
+                Key<O> key = object.getKey();
                 if (key == null) { throw new NullPointerException(); }
                 if (!objectMap.containsKey(key)) {
                     objectMap.put(key, object);
-                } else if (object != null && objectMap.get(key) == null) {
+                } else if (objectMap.get(key) == null) {
                     objectMap.put(key, object);
                 }
             }
@@ -88,17 +79,4 @@ public abstract class DomainObject<O extends DomainObject<O>> {
             }
         }
     }
-    /*
-    public static abstract class Key<O extends DomainObject<O>, K extends DomainObject.Key<O, K>> {
-        private Key() {}
-        Key(Builder<O, K> builder) {}
-        
-        public abstract Class<O> getDomainObjectClass();
-        public abstract int getFieldCount();
-    }
-    
-    public static abstract class Builder<O extends DomainObject<O>, K extends DomainObject.Key<O, K>> {
-        abstract K getKey();
-        abstract boolean isValid();
-    }*/
 }

@@ -9,24 +9,57 @@ package scDomain.domain.objects;
  *
  * @author Morgan
  */
-public class Role extends DomainObject<Role> {
+public final class Role extends AbstractDomainObject<Role> implements DomainObject<Role> {
     private String id;
     private String name;
     private short level;
     private boolean onScorecard;
+    private String fullName;  //name + " (" + level + ")"
     
-    public static class Key extends StringDomainKey<Role> {		
-        public Key(String roleId) { super(roleId); }
+    private Role(Role.Builder builder) { super(builder); }
+    
+    public String getId() { return id; }
+    public String getName() { return name; }
+    public short getLevel() { return level; }
+    public boolean getOnScorecard() { return onScorecard; }
+    public String getFullName() { return fullName; }
+    
+    @Override
+    public String toString() { return name; }
+    
+    public static final class Key extends StringDomainKey<Role> implements DomainObject.Key<Role> {
+        Key(Role.Builder builder) { 
+            super(builder);
+            if (builder.id == null) { throw new NullPointerException(); }
+            
+            id = builder.id;
+        }
         @Override
-        public Class<Role> getDomainObjectClass() { return Role.class; }
+        public Class<Role> getDomainClass() { return Role.class; }
     }
-    public static class Builder extends DomainObject.Builder<Role> {
+    
+    public static final class Builder extends AbstractDomainObject.Builder<Role> implements DomainObject.Builder<Role> {
         private String id;
         private String name;
         private short level;
         private boolean onScorecard;
         
-        Role.Key getKey() { return new Role.Key(id); }
+        @Override
+        DomainObject.Type getType() { return DomainObject.Type.ROLE; }
+        @Override
+        Role.Key getKey() { return new Role.Key(this); }
+        @Override
+        public Role doGetObject() {
+            Role role = new Role(this);
+            
+            role.id = id;
+            role.name = name;
+            role.level = level;
+            role.onScorecard = onScorecard;
+            
+            return role;
+        }
+        @Override
         boolean isValid() {
             //TODO!!!
             return true;
@@ -49,22 +82,4 @@ public class Role extends DomainObject<Role> {
             return this;
         }
     }
-    
-    public Role(Role.Builder builder) {
-        super(builder);
-        
-        id = builder.id;
-        name = builder.name;
-        level = builder.level;
-        onScorecard = builder.onScorecard;
-    }
-    
-    public String getRoleId() { return id; }
-    public String getName() { return name; }
-    public short getLevel() { return level; }
-    public boolean getOnScorecard() { return onScorecard; }
-    
-    @Override
-    public String toString() { return name; }
-    public String getFullName() { return name + " (" + level + ")"; }
 }

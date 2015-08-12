@@ -5,17 +5,16 @@
  */
 package scDomain.data.database;
 
+import java.sql.*;
+import javax.sql.DataSource;
+import scDomain.domain.dao.*;
+import scDomain.domain.objects.*;
+
 /**
  *
  * @author Morgan
  */
-import scDomain.domain.objects.DomainObject;
-import scDomain.domain.objects.DomainKey;
-import java.sql.*;
-import javax.sql.DataSource;
-import scDomain.domain.dao.*;
-
-abstract class DomainDbDao <O extends DomainObject<O>, K extends DomainKey<O>> implements DomainDao<O, K> {
+abstract class DomainDbDao <O extends DomainObject<O>, K extends DomainObject.Key<O>> implements DomainDao<O, K> {
     protected final Connection connection;
     
     protected abstract PreparedStatement findStatement(K key) throws SQLException;
@@ -41,12 +40,11 @@ abstract class DomainDbDao <O extends DomainObject<O>, K extends DomainKey<O>> i
     public O find(K key) {
         //Check for already loaded objects here.
         O object = null;
-        ResultSet rs = null;
         
         try {
             PreparedStatement findStatement = findStatement(key);
             try {
-                rs = findStatement.executeQuery();
+                ResultSet rs = findStatement.executeQuery();
                 try {
                     rs.next();
 

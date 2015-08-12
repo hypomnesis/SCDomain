@@ -36,16 +36,15 @@ final class AgentDbDao extends DomainDbDao<Agent, Agent.Key> implements AgentDao
 
     @Override
     protected Agent doLoad(ResultSet rs) throws SQLException {
-        Agent agent = new Agent(new Agent.Key(rs.getString("sa_username")),
-            new Agent.Builder().
-                    username(rs.getString("sa_username")).
-                    firstName(rs.getString("sa_firstname")).
-                    lastName(rs.getString("sa_lastname")).
-                    email(rs.getString("sa_email")).
-                    teamLead(new Agent.Key(rs.getString("sa_lead"))).
-                    supervisor(new Agent.Key(rs.getString("sa_supervisor"))).
-                    role(new RoleDbDao(connection).find(new Role.Key(rs.getString("sa_role"))))
-        );
+        Agent agent = new Agent.Builder().
+                username(rs.getString("sa_username")).
+                firstName(rs.getString("sa_firstname")).
+                lastName(rs.getString("sa_lastname")).
+                email(rs.getString("sa_email")).
+                teamLead(new Agent.Key(rs.getString("sa_lead"))).
+                supervisor(new Agent.Key(rs.getString("sa_supervisor"))).
+                role(new RoleDbDao(connection).find(new Role.Key(rs.getString("sa_role")))).
+                g
         
         return agent;
     }
