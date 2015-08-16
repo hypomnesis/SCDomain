@@ -17,6 +17,7 @@ abstract class SingleDomainKey<T, O extends AbstractDomainObject<O>> extends Abs
         this.id = id;
     }
     SingleDomainKey(AbstractDomainObject.Builder<O> builder) { super(builder); }
+    SingleDomainKey(SingleDomainKey<T, O> key) { this.id = key.id; }
     
     @Override
     public boolean equals(Object object) {

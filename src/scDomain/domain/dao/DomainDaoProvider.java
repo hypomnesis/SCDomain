@@ -6,11 +6,17 @@
 
 package scDomain.domain.dao;
 
+import scDomain.domain.objects.DomainObject;
+
 /**
  *
  * @author hayes
  */
 public interface DomainDaoProvider {
+    public void close();
+    public void startTransaction();
+    public void commit();
+    public void rollback();
     public AgentDao getAgentDao();
     public RoleDao getRoleDao();
 }

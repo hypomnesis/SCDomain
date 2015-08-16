@@ -12,13 +12,11 @@ package scDomain.data.database;
 import scDomain.domain.objects.Agent;
 import scDomain.domain.dao.AgentDao;
 import java.sql.*;
-import javax.sql.DataSource;
 import scDomain.domain.objects.Role;
 
 final class AgentDbDao extends DomainDbDao<Agent, Agent.Key> implements AgentDao {
     static final String TABLE = "scweb_sc_agents";
     
-    AgentDbDao(DataSource datasource) { super(datasource); }
     AgentDbDao(Connection connection) { super(connection); }
     
     @Override
@@ -35,7 +33,10 @@ final class AgentDbDao extends DomainDbDao<Agent, Agent.Key> implements AgentDao
     }
 
     @Override
-    protected Agent doLoad(ResultSet rs) throws SQLException {
+    Agent load(ResultSet rs) throws SQLException {
+        RoleDbDao roleDao = new RoleDbDao(connection);
+        Role role = roleDao.find(new Role.Key(rs.getString("sa_role")));
+        
         Agent agent = new Agent.Builder().
                 username(rs.getString("sa_username")).
                 firstName(rs.getString("sa_firstname")).
@@ -43,7 +44,7 @@ final class AgentDbDao extends DomainDbDao<Agent, Agent.Key> implements AgentDao
                 email(rs.getString("sa_email")).
                 teamLead(new Agent.Key(rs.getString("sa_lead"))).
                 supervisor(new Agent.Key(rs.getString("sa_supervisor"))).
-                role(new RoleDbDao(connection).find(new Role.Key(rs.getString("sa_role")))).
+                role(role).
                 getObject();
         
         return agent;

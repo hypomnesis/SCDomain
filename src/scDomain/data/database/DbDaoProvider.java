@@ -5,7 +5,7 @@
  */
 package scDomain.data.database;
 
-import javax.sql.DataSource;
+import java.sql.Connection;
 import scDomain.domain.dao.*;
 
 /**
@@ -15,22 +15,56 @@ import scDomain.domain.dao.*;
 public enum DbDaoProvider implements DomainDaoProvider {
     INSTANCE;
     
-    private DataSource datasource = null;
+    private ConnectionProvider provider = null;
+    private Connection connection;
+    private boolean inTransaction = false;
     
-    public DomainDaoProvider setDataSource(DataSource datasource) {
-        if (datasource == null) { throw new NullPointerException(); }
-        this.datasource = datasource;
+    private void newConnection() {
+        if (provider == null) { throw new IllegalStateException(); }
+        if (connection != null || inTransaction) { throw new IllegalStateException(); }
+        
+        connection = provider.getConnection();
+    }
+    private void validateConnection() {
+        if (inTransaction && connection == null) {
+            throw new IllegalStateException();
+        } else if (!inTransaction) {
+            //Not sure if need to throw error if not in transaction and connection exists.
+            if (connection == null) { newConnection(); }
+        }
+    }
+    
+    public DomainDaoProvider setConnectionProvider(ConnectionProvider provider) {
+        if (provider == null) { throw new NullPointerException(); }
+        this.provider = provider;
         return this;
     }
+    @Override
+    public void startTransaction() {
+        newConnection();
+        inTransaction = true;
+    }
+    @Override
+    public void commit() {
+        provider.commit(connection);
+        inTransaction = false;
+    }
+    @Override
+    public void rollback() {
+        provider.rollback(connection);
+        inTransaction = false;
+    }
+    @Override
+    public void close() { provider.closeConnection(connection); }
     
     @Override
     public AgentDao getAgentDao() {
-        if (datasource == null) { throw new NullPointerException(); }
-        return new AgentDbDao(datasource);
+        validateConnection();
+        return new AgentDbDao(connection);
     }
     @Override
     public RoleDao getRoleDao() {
-        if (datasource == null) { throw new NullPointerException(); }
-        return new RoleDbDao(datasource);
+        validateConnection();
+        return new RoleDbDao(connection);
     }
 }

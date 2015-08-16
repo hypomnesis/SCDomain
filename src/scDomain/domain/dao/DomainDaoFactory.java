@@ -17,6 +17,15 @@ public enum DomainDaoFactory implements DomainDaoProvider {
     
     private DomainDaoProvider provider = null;
     
+    @Override
+    public void startTransaction() { provider.startTransaction(); }
+    @Override
+    public void commit() { provider.commit(); }
+    @Override
+    public void rollback() { provider.rollback(); }
+    @Override
+    public void close() { provider.close(); }
+    
     private static class AgentDaoWrapper extends DomainDaoWrapper.Updater<Agent, Agent.Key, Agent.Builder> implements AgentDao {
         private AgentDaoWrapper(AgentDao mapper, DomainObject.Type.Pool<Agent> pool) {
             super(mapper, pool);
@@ -37,7 +46,8 @@ public enum DomainDaoFactory implements DomainDaoProvider {
     @Override
     public AgentDao getAgentDao() {
         if (provider == null) { throw new NullPointerException(); }
-        return new AgentDaoWrapper(provider.getAgentDao(), DomainObject.Type.AGENT.pool);
+        AgentDao dao = provider.getAgentDao();
+        return new AgentDaoWrapper(dao, DomainObject.Type.AGENT.pool);
     }
     @Override
     public RoleDao getRoleDao() {

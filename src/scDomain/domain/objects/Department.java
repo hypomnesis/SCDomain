@@ -35,7 +35,7 @@ public final class Department extends AbstractDomainObject<Department> {
             id = builder.id;
         }
         @Override
-        public Class<Department> getDomainClass() { return Department.class; }
+        public DomainObject.Type getDomainType() { return DomainObject.Type.DEPARTMENT; }
     }
     public static final class Builder extends AbstractDomainObject.Builder<Department> {
         private String id;
@@ -45,7 +45,7 @@ public final class Department extends AbstractDomainObject<Department> {
         private String hrPartner = null;
         
         @Override
-        DomainObject.Type getType() { return DomainObject.Type.DEPARTMENT; }
+        DomainObject.Type getDomainType() { return DomainObject.Type.DEPARTMENT; }
         @Override
         Department.Key getKey() { return new Department.Key(this); }
         @Override

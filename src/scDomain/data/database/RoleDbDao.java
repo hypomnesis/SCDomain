@@ -12,7 +12,6 @@ package scDomain.data.database;
 import scDomain.domain.objects.Role;
 import scDomain.domain.dao.RoleDao;
 import java.sql.*;
-import javax.sql.DataSource;
 
 final class RoleDbDao extends DomainDbDao<Role, Role.Key> implements RoleDao {
     static final String TABLE = "scweb_sc_roles";
@@ -27,20 +26,19 @@ final class RoleDbDao extends DomainDbDao<Role, Role.Key> implements RoleDao {
                 getObject();
     }
     
-    RoleDbDao(DataSource datasource) { super(datasource); }
     RoleDbDao(Connection connection) { super(connection); }
     
     @Override
     protected PreparedStatement findStatement(Role.Key key) throws SQLException {
         PreparedStatement findStatement = connection.prepareStatement(
-                "SELECT r.* FROM " + TABLE + " WHERE sr_role = ?"
+                "SELECT r.* FROM " + TABLE + " r WHERE sr_role = ?"
         );
         findStatement.setString(1, key.getID());
         return findStatement;
     }
 
     @Override
-    protected Role doLoad(ResultSet rs) throws SQLException {
+    Role load(ResultSet rs) throws SQLException {
         return populateRole(rs);
     }
     //All this TODO!!!

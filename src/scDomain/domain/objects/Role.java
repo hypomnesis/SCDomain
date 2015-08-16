@@ -36,7 +36,7 @@ public final class Role extends AbstractDomainObject<Role> implements DomainObje
             id = builder.id;
         }
         @Override
-        public Class<Role> getDomainClass() { return Role.class; }
+        public DomainObject.Type getDomainType() { return DomainObject.Type.ROLE; }
     }
     
     public static final class Builder extends AbstractDomainObject.Builder<Role> implements DomainObject.Builder<Role> {
@@ -46,7 +46,7 @@ public final class Role extends AbstractDomainObject<Role> implements DomainObje
         private boolean onScorecard;
         
         @Override
-        DomainObject.Type getType() { return DomainObject.Type.ROLE; }
+        DomainObject.Type getDomainType() { return DomainObject.Type.ROLE; }
         @Override
         Role.Key getKey() { return new Role.Key(this); }
         @Override

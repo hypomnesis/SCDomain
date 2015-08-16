@@ -21,25 +21,14 @@ public interface DomainObject<O extends DomainObject<O>> {
     }
     
     public static enum Type {
-        AGENT, DEPARTMENT, ROLE;
+        AGENT(new Pool<Agent>()),
+        DEPARTMENT(new Pool<Department>()),
+        ROLE(new Pool<Role>()),
+        TIME_SLOT(new Pool<TimeSlot>());
         
         public final Pool pool;
         
-        Type() {
-            switch (this) {
-                case AGENT:
-                    pool = new Pool<Agent>();
-                    break;
-                case DEPARTMENT:
-                    pool = new Pool<Department>();
-                    break;
-                case ROLE:
-                    pool = new Pool<Role>();
-                    break;
-                default:
-                    pool = null;
-            }
-        }
+        <O extends DomainObject<O>> Type(Pool<O> pool) { this.pool = pool; }
         
         public static final class Pool<O extends DomainObject<O>> {
             private final WeakHashMap<Key<O>, O> objectMap = new WeakHashMap<>();

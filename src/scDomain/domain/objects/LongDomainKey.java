@@ -11,6 +11,7 @@ package scDomain.domain.objects;
  */
 abstract class LongDomainKey<O extends AbstractDomainObject<O>> extends SingleDomainKey<Long, O> {
     LongDomainKey(AbstractDomainObject.Builder<O> builder) { super(builder); }
+    LongDomainKey(LongDomainKey<O> key) { super(key); }
     
     public Long getID() { return id; }
     @Override
