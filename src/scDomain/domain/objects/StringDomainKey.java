@@ -16,7 +16,6 @@ abstract class StringDomainKey<O extends AbstractDomainObject<O>> extends Single
         if (id.length() == 0) { throw new IllegalArgumentException(); }
     }
     StringDomainKey(AbstractDomainObject.Builder<O> builder) { super(builder); }
-    StringDomainKey(StringDomainKey<O> key) { super(key); }
     
     public String getID() { return id; }
     @Override

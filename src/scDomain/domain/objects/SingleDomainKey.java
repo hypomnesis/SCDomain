@@ -17,7 +17,8 @@ abstract class SingleDomainKey<T, O extends AbstractDomainObject<O>> extends Abs
         this.id = id;
     }
     SingleDomainKey(AbstractDomainObject.Builder<O> builder) { super(builder); }
-    SingleDomainKey(SingleDomainKey<T, O> key) { this.id = key.id; }
+    
+    //getId() not implemented here in case T is case as a mutable object.  Keys should be immutable.
     
     @Override
     public boolean equals(Object object) {

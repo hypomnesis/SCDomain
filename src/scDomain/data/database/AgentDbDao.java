@@ -5,28 +5,40 @@
  */
 package scDomain.data.database;
 
+import static scDomain.data.database.AgentDbDao.Field.*;
+
 /**
  *
  * @author Morgan
  */
-import scDomain.domain.objects.Agent;
+import scDomain.domain.objects.*;
 import scDomain.domain.dao.AgentDao;
 import java.sql.*;
-import scDomain.domain.objects.Role;
 
 final class AgentDbDao extends DomainDbDao<Agent, Agent.Key> implements AgentDao {
     static final String TABLE = "scweb_sc_agents";
+    
+    enum Field {
+        USERNAME("sa_username"),
+        FIRSTNAME("sa_firstname"),
+        LASTNAME("sa_lastname"),
+        EMAIL("sa_email"),
+        TEAMLEAD("sa_lead"),
+        SUPERVISOR("sa_supervisor"),
+        DEPARTMENT("sa_department"),
+        ROLE("sa_role");
+        
+        private final String id;
+        
+        private Field(String id) { this.id = id; }
+    }
     
     AgentDbDao(Connection connection) { super(connection); }
     
     @Override
     protected PreparedStatement findStatement(Agent.Key key) throws SQLException {
         PreparedStatement findStatement = connection.prepareStatement(
-                "SELECT a.*, d.*, r.*\n"
-                        + "FROM (" + TABLE + " a INNER JOIN scweb_sc_departments d\n"
-                        + "\tON a.sa_department = d.sd_department)\n"
-                        + "\tINNER JOIN scweb_sc_roles r ON a.sa_role = r.sr_role\n"
-                        + "WHERE sa_username = ?"
+                "SELECT * FROM " + TABLE + " WHERE sa_username = ?"
         );
         findStatement.setString(1, key.getID());
         return findStatement;
@@ -34,19 +46,17 @@ final class AgentDbDao extends DomainDbDao<Agent, Agent.Key> implements AgentDao
 
     @Override
     Agent load(ResultSet rs) throws SQLException {
-        RoleDbDao roleDao = new RoleDbDao(connection);
-        Role role = roleDao.find(new Role.Key(rs.getString("sa_role")));
-        
         Agent agent = new Agent.Builder().
-                username(rs.getString("sa_username")).
-                firstName(rs.getString("sa_firstname")).
-                lastName(rs.getString("sa_lastname")).
-                email(rs.getString("sa_email")).
-                teamLead(new Agent.Key(rs.getString("sa_lead"))).
-                supervisor(new Agent.Key(rs.getString("sa_supervisor"))).
-                role(role).
+                username(rs.getString(USERNAME.id)).
+                firstName(rs.getString(FIRSTNAME.id)).
+                lastName(rs.getString(LASTNAME.id)).
+                email(rs.getString(EMAIL.id)).
+                teamLead(new Agent.Key(rs.getString(TEAMLEAD.id))).
+                supervisor(new Agent.Key(rs.getString(SUPERVISOR.id))).
+                department(new Department.Key(rs.getString(DEPARTMENT.id))).
+                role(new Role.Key(rs.getString(ROLE.id))).
                 getObject();
-        
+                
         return agent;
     }
     //All this TODO!!!

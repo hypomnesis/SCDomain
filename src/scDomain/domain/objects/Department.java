@@ -10,13 +10,21 @@ package scDomain.domain.objects;
  * @author Morgan
  */
 public final class Department extends AbstractDomainObject<Department> {
-    private String id;
-    private String name;
-    private String email;
-    private Agent.Key head;
-    private String hrPartner;
+    private final String id;
+    private final String name;
+    private final String email;
+    private final Agent.Key head;
+    private final String hrPartner;
     
-    private Department(Department.Builder builder) { super(builder); }
+    private Department(Department.Builder builder) {
+        super(builder);
+        
+        id = builder.id;
+        name = builder.name;
+        email = builder.email;
+        head = builder.head;
+        hrPartner = builder.hrPartner;
+    }
     
     public String getId() { return id; }
     public String getName() { return name; }
@@ -28,12 +36,8 @@ public final class Department extends AbstractDomainObject<Department> {
     public String toString() { return name; }
     
     public static final class Key extends StringDomainKey<Department> {
-        Key(Department.Builder builder) { 
-            super(builder);
-            if (builder.id == null) { throw new NullPointerException(); }
-            
-            id = builder.id;
-        }
+        public Key(String id) { super(id); }
+        Key(Department.Builder builder) { this(builder.id); }
         @Override
         public DomainObject.Type getDomainType() { return DomainObject.Type.DEPARTMENT; }
     }
@@ -49,17 +53,7 @@ public final class Department extends AbstractDomainObject<Department> {
         @Override
         Department.Key getKey() { return new Department.Key(this); }
         @Override
-        Department doGetObject() {
-            Department dept = new Department(this);
-            
-            dept.id = id;
-            dept.name = name;
-            dept.email = email;
-            dept.head = head;
-            dept.hrPartner = hrPartner;
-            
-            return dept;
-        }
+        Department doGetObject() { return new Department(this); }
         @Override
         boolean isValid() {
             //TODO

@@ -1,16 +1,16 @@
 package scDomain.domain.objects;
 
 public final class Agent extends AbstractDomainObject<Agent> {
-    private String username;
-    private String firstName;
-    private String lastName;
-    private String displayName;
-    private Department department;
-    private Role role;
-    private String email;
+    private final String username;
+    private final String firstName;
+    private final String lastName;
+    private final String displayName;
+    private final Department.Key department;
+    private final Role.Key role;
+    private final String email;
     //Do I want them to have full on Agent objects as well and lazy load them?
-    private Agent.Key teamLead;
-    private Agent.Key supervisor;
+    private final Agent.Key teamLead;
+    private final Agent.Key supervisor;
     
     private Agent(Agent.Builder builder) {
         super(builder);
@@ -29,8 +29,8 @@ public final class Agent extends AbstractDomainObject<Agent> {
     }
     
     public String getUsername() { return username; }
-    public Role getRole() { return role; }
-    public Department getDepartment() { return department; }
+    public Role.Key getRole() { return role; }
+    public Department.Key getDepartment() { return department; }
     public String getFirstName() { return firstName; }
     public String getLastName() {return lastName; }
     public String getDisplayName() { return displayName; }
@@ -42,18 +42,12 @@ public final class Agent extends AbstractDomainObject<Agent> {
     
     @Override
     public String toString() {
-        return username + ": " + getDisplayName() + ", " + role.getFullName();
+        return username + ": " + displayName + ", " + department.getID() + " " + role.getID();
     }
     
     public final static class Key extends StringDomainKey<Agent> {
         public Key(String id) { super(id); }
-        public Key(Key key) { super(key); }
-        Key(Agent.Builder builder) {
-            super(builder);
-            if (builder.username == null) { throw new NullPointerException(); }
-            
-            id = builder.username;
-        }
+        Key(Agent.Builder builder) { this(builder.username); }
         @Override
         DomainObject.Type getDomainType() { return DomainObject.Type.AGENT; }
     }
@@ -62,8 +56,8 @@ public final class Agent extends AbstractDomainObject<Agent> {
         private String username;
         private String firstName;
         private String lastName;
-        private Department department;
-        private Role role;
+        private Department.Key department;
+        private Role.Key role;
         private String email;
         private Agent.Key teamLead;
         private Agent.Key supervisor;
@@ -102,11 +96,11 @@ public final class Agent extends AbstractDomainObject<Agent> {
             this.lastName = lastName;
             return this;
         }
-        public Builder department(Department department) {
+        public Builder department(Department.Key department) {
             this.department = department;
             return this;
         }
-        public Builder role(Role role) {
+        public Builder role(Role.Key role) {
             this.role = role;
             return this;
         }

@@ -5,6 +5,8 @@
  */
 package scDomain.data.database;
 
+import static scDomain.data.database.RoleDbDao.Field.*;
+
 /**
  *
  * @author Morgan
@@ -15,6 +17,17 @@ import java.sql.*;
 
 final class RoleDbDao extends DomainDbDao<Role, Role.Key> implements RoleDao {
     static final String TABLE = "scweb_sc_roles";
+    
+    enum Field {
+        ID("sr_role"),
+        NAME("sr_name"),
+        LEVEL("sr_level"),
+        SCORECARD("sr_scorecard");
+        
+        private final String id;
+        
+        private Field(String id) { this.id = id; }
+    }
     
     static Role populateRole(ResultSet rs) throws SQLException {
         //TODO:  so much so much.  Add in Role and Dept and figure out where to get lead keys from.

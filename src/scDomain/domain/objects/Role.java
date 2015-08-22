@@ -10,13 +10,21 @@ package scDomain.domain.objects;
  * @author Morgan
  */
 public final class Role extends AbstractDomainObject<Role> implements DomainObject<Role> {
-    private String id;
-    private String name;
-    private short level;
-    private boolean onScorecard;
-    private String fullName;  //name + " (" + level + ")"
+    private final String id;
+    private final String name;
+    private final short level;
+    private final boolean onScorecard;
+    private final String fullName;
     
-    private Role(Role.Builder builder) { super(builder); }
+    private Role(Role.Builder builder) {
+        super(builder);
+        
+        id = builder.id;
+        name = builder.name;
+        level = builder.level;
+        onScorecard = builder.onScorecard;
+        fullName = name + " (" + level + ")";
+    }
     
     public String getId() { return id; }
     public String getName() { return name; }
@@ -29,12 +37,7 @@ public final class Role extends AbstractDomainObject<Role> implements DomainObje
     
     public static final class Key extends StringDomainKey<Role> implements DomainObject.Key<Role> {
         public Key(String id) { super(id); }
-        Key(Role.Builder builder) { 
-            super(builder);
-            if (builder.id == null) { throw new NullPointerException(); }
-            
-            id = builder.id;
-        }
+        Key(Role.Builder builder) { this(builder.id); }
         @Override
         public DomainObject.Type getDomainType() { return DomainObject.Type.ROLE; }
     }
@@ -50,16 +53,7 @@ public final class Role extends AbstractDomainObject<Role> implements DomainObje
         @Override
         Role.Key getKey() { return new Role.Key(this); }
         @Override
-        public Role doGetObject() {
-            Role role = new Role(this);
-            
-            role.id = id;
-            role.name = name;
-            role.level = level;
-            role.onScorecard = onScorecard;
-            
-            return role;
-        }
+        public Role doGetObject() { return new Role(this); }
         @Override
         boolean isValid() {
             //TODO!!!
