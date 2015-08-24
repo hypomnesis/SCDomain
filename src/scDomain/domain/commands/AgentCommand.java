@@ -14,5 +14,5 @@ import scDomain.domain.objects.Agent;
  */
 public class AgentCommand extends DomainCommand<Agent, Agent.Key> {
     @Override
-    AgentDao getDao() { return provider.getAgentDao(); }
+    public AgentDao getDao() { return provider.getAgentDao(); }
 }

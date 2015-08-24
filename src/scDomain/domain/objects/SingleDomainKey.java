@@ -21,6 +21,8 @@ abstract class SingleDomainKey<T, O extends AbstractDomainObject<O>> extends Abs
     //getId() not implemented here in case T is case as a mutable object.  Keys should be immutable.
     
     @Override
+    public String toString() { return id.toString(); }
+    @Override
     public boolean equals(Object object) {
         if (!super.equals(object)) { return false; }
         if ( !(object instanceof SingleDomainKey)) { return false; }

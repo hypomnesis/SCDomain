@@ -14,7 +14,7 @@ import scDomain.domain.objects.DomainObject;
 abstract class DomainDaoWrapper<O extends DomainObject<O>, K extends DomainObject.Key<O>, B extends DomainObject.Builder<O>>
         implements DomainDao<O, K>
 {
-    protected final DomainDao<O, K> mapper;
+    private final DomainDao<O, K> mapper;
     protected final DomainObject.Type.Pool<O> pool;
     
     private DomainDaoWrapper() { throw new AbstractMethodError(); }
@@ -34,6 +34,7 @@ abstract class DomainDaoWrapper<O extends DomainObject<O>, K extends DomainObjec
         
         return object;
     }
+    DomainDao<O, K> getMapper() { return mapper; }
     //can't think of a way to port the load or doLoad up here to enforce this functionality.
     //I was told to check again after pulling data but before loading.. i forget why.  Look up and document.
     /*@Override

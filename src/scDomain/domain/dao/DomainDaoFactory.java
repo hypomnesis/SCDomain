@@ -6,6 +6,7 @@
 
 package scDomain.domain.dao;
 
+import java.util.ArrayList;
 import scDomain.domain.objects.*;
 
 /**
@@ -30,6 +31,57 @@ public enum DomainDaoFactory implements DomainDaoProvider {
         private AgentDaoWrapper(AgentDao mapper, DomainObject.Type.Pool<Agent> pool) {
             super(mapper, pool);
         }
+        @Override
+        AgentDao getMapper() { return (AgentDao)super.getMapper(); }
+        @Override
+        public ArrayList<Agent> findByDepartment(Department.Key[] departments) {
+            return getMapper().findByDepartment(departments);
+        }
+        @Override
+        public ArrayList<Agent> findByDepartment(Department.Key departments) {
+            return getMapper().findByDepartment(departments);
+        }
+        @Override
+        public ArrayList<Agent> findByDepartment(Department.Key[] departments, boolean status) {
+            return getMapper().findByDepartment(departments, status);
+        }
+        @Override
+        public ArrayList<Agent> findByDepartment(Department.Key departments, boolean status) {
+            return getMapper().findByDepartment(departments, status);
+        }
+        @Override
+        public ArrayList<Agent> findByDeptRole(Department.Key[] departments, Role.Key[] roles) {
+            return getMapper().findByDeptRole(departments, roles);
+        }
+        @Override
+        public ArrayList<Agent> findByDeptRole(Department.Key departments, Role.Key[] roles) {
+            return getMapper().findByDeptRole(departments, roles);
+        }
+        @Override
+        public ArrayList<Agent> findByDeptRole(Department.Key[] departments, Role.Key roles) {
+            return getMapper().findByDeptRole(departments, roles);
+        }
+        @Override
+        public ArrayList<Agent> findByDeptRole(Department.Key departments, Role.Key roles) {
+            return getMapper().findByDeptRole(departments, roles);
+        }
+        @Override
+        public ArrayList<Agent> findByDeptRole(Department.Key[] departments, Role.Key[] roles, boolean status) {
+            return getMapper().findByDeptRole(departments, roles, status);
+        }
+        @Override
+        public ArrayList<Agent> findByDeptRole(Department.Key departments, Role.Key[] roles, boolean status) {
+            return getMapper().findByDeptRole(departments, roles, status);
+        }
+        @Override
+        public ArrayList<Agent> findByDeptRole(Department.Key[] departments, Role.Key roles, boolean status) {
+            return getMapper().findByDeptRole(departments, roles, status);
+        }
+        @Override
+        public ArrayList<Agent> findByDeptRole(Department.Key departments, Role.Key roles, boolean status) {
+            return getMapper().findByDeptRole(departments, roles, status);
+        }
+        
     }
     private static class RoleDaoWrapper extends DomainDaoWrapper.FindAll.Only<Role, Role.Key, Role.Builder> implements RoleDao {
         private RoleDaoWrapper(RoleDao mapper, DomainObject.Type.Pool<Role> pool) {

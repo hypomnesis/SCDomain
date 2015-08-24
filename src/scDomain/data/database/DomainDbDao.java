@@ -6,7 +6,9 @@
 package scDomain.data.database;
 
 import java.sql.*;
-import javax.sql.DataSource;
+import java.util.ArrayList;
+import morgan.database.DbField;
+import morgan.database.DbField.StatementArray;
 import scDomain.domain.dao.*;
 import scDomain.domain.objects.*;
 
@@ -15,11 +17,9 @@ import scDomain.domain.objects.*;
  * @author Morgan
  */
 abstract class DomainDbDao <O extends DomainObject<O>, K extends DomainObject.Key<O>> implements DomainDao<O, K> {
-    protected final Connection connection;
+    final Connection connection;
     
-    protected abstract PreparedStatement findStatement(K key) throws SQLException;
-    
-    protected DomainDbDao(Connection connection) {
+    DomainDbDao(Connection connection) {
         if (connection == null) { throw new NullPointerException(); }
         this.connection = connection;
     }
@@ -41,5 +41,27 @@ abstract class DomainDbDao <O extends DomainObject<O>, K extends DomainObject.Ke
         }
         return object;
     }
+    //TODO:  Determine if ArrayList is best collection to use.
+    //TODO:  Use class variable define in subclasses to initialize ArrayList to appropriate size.
+    ArrayList<O> findMany(DbField.Values[] pairings) {
+        ArrayList<O> objects = new ArrayList<>();
+        
+        try (StatementArray statements = DbField.Values.getStatements(connection, pairings);) {
+            for (PreparedStatement statement : statements) {
+                try (ResultSet rs = statement.executeQuery();) {
+                    while (rs.next()) {
+                        objects.add(load(rs));
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                    //TODO ERROR HANDLING
+                }
+            }
+        } catch (SQLException e) {
+            //something
+        }
+        return objects;
+    }
+    abstract PreparedStatement findStatement(K key) throws SQLException;
     abstract O load(ResultSet rs) throws SQLException;
 }

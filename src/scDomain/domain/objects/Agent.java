@@ -36,9 +36,21 @@ public final class Agent extends AbstractDomainObject<Agent> {
     public String getDisplayName() { return displayName; }
     public String getEmail() { return email; }
     public Agent.Key getTeamLead() { return teamLead; }
-    public String getTeamLeadId() { return teamLead.id; }
+    public String getTeamLeadId() {
+        if (teamLead == null) {
+            return null;
+        } else {
+            return teamLead.id;
+        }
+    }
     public Agent.Key getSupervisor() { return supervisor; }
-    public String getSupervisorId() { return supervisor.id; }
+    public String getSupervisorId() {
+        if (supervisor == null) {
+            return null;
+        } else {
+            return supervisor.id;
+        }
+    }
     
     @Override
     public String toString() {
@@ -73,11 +85,12 @@ public final class Agent extends AbstractDomainObject<Agent> {
             if (username == null ||
                     firstName == null ||
                     lastName == null ||
-                    //department == null ||
+                    department == null ||
                     role== null ||
-                    email == null ||
-                    teamLead == null ||
-                    supervisor == null) {
+                    email == null //||
+                    //teamLead == null ||
+                    //supervisor == null
+                    ) {
                 return false;
             } else {
                 return true;
