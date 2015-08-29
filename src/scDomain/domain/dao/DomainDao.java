@@ -5,6 +5,8 @@
  */
 package scDomain.domain.dao;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import scDomain.domain.objects.DomainObject;
 
 /**
@@ -15,9 +17,10 @@ import scDomain.domain.objects.DomainObject;
  */
 public interface DomainDao <O extends DomainObject<O>, K extends DomainObject.Key<O>> {
     public O find(K key);
+    public ArrayList<O> find(Collection<K> key);
     
     interface FindAll <O extends DomainObject<O>, K extends DomainObject.Key<O>> extends DomainDao<O, K> {
-        public O[] findAll();
+        public ArrayList<O> findAll();
     }
     
     interface Updater <O extends DomainObject<O>, K extends DomainObject.Key<O>, B extends DomainObject.Builder<O>>

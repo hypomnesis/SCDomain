@@ -5,6 +5,7 @@
  */
 package scDomain.domain.objects;
 
+import java.util.ArrayList;
 import java.util.WeakHashMap;
 
 /**
@@ -21,19 +22,24 @@ public interface DomainObject<O extends DomainObject<O>> {
     }
     
     public static enum Type {
-        AGENT(new Pool<Agent>()),
-        DEPARTMENT(new Pool<Department>()),
-        ROLE(new Pool<Role>()),
-        TIME_SLOT(new Pool<TimeSlot>());
+        AGENT(new Pool<Agent>(false)),
+        DEPARTMENT(new Pool<Department>(true)),
+        ROLE(new Pool<Role>(true)),
+        TIME_SLOT(new Pool<TimeSlot>(false));
+        
+        private static final ArrayList<DomainObject> permPool = new ArrayList<>(50);
         
         public final Pool pool;
         
-        <O extends DomainObject<O>> Type(Pool<O> pool) { this.pool = pool; }
+        private <O extends DomainObject<O>> Type(Pool<O> pool) { this.pool = pool; }
         
         public static final class Pool<O extends DomainObject<O>> {
             private final WeakHashMap<Key<O>, O> objectMap = new WeakHashMap<>();
+            private final boolean permanent;
             
-            private Pool() {}
+            private Pool(boolean permanent) {
+                this.permanent = permanent;
+            }
             
             public O get(Key<O> key) { return objectMap.get(key); }
             public int count() { return objectMap.size(); }
@@ -46,12 +52,6 @@ public interface DomainObject<O extends DomainObject<O>> {
             public boolean containsValue(O object) {
                 return objectMap.containsValue(object);
             }
-            public void put(Key<O> key) {
-                if (key == null) { throw new NullPointerException(); }
-                if (!objectMap.containsKey(key)) {
-                    objectMap.put(key, null);
-                }
-            }
             public void put(O object) {
                 if (object == null) { throw new NullPointerException(); }
                 Key<O> key = object.getKey();
@@ -60,6 +60,9 @@ public interface DomainObject<O extends DomainObject<O>> {
                     objectMap.put(key, object);
                 } else if (objectMap.get(key) == null) {
                     objectMap.put(key, object);
+                }
+                if (permanent && !permPool.contains(object)) {
+                    permPool.add(object);
                 }
             }
             public void put(O[] objects) {

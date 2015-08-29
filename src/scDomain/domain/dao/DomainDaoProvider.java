@@ -6,8 +6,6 @@
 
 package scDomain.domain.dao;
 
-import scDomain.domain.objects.DomainObject;
-
 /**
  *
  * @author hayes

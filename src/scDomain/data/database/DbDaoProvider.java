@@ -55,7 +55,10 @@ public enum DbDaoProvider implements DomainDaoProvider {
         inTransaction = false;
     }
     @Override
-    public void close() { provider.closeConnection(connection); }
+    public void close() {
+        provider.closeConnection(connection);
+        inTransaction = false;
+    }
     
     @Override
     public AgentDao getAgentDao() {

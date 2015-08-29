@@ -13,14 +13,14 @@ import scDomain.domain.objects.DomainObject;
  * @author Morgan
  * @param <O>
  * @param <K>
+ * @param <B>
  */
-public abstract class DomainCommand<O extends DomainObject<O>, K extends DomainObject.Key<O>> {
-    protected final DomainDaoProvider provider = DomainDaoFactory.INSTANCE;
+public abstract class DomainCommand<O extends DomainObject<O>, K extends DomainObject.Key<O>, B extends DomainObject.Builder<O>> {
+    protected static final DomainDaoFactory provider = DomainDaoFactory.INSTANCE;
     
-    abstract DomainDao<O, K> getDao();
-    
+    abstract DomainDaoWrapper<O, K, B> getDao();
     public O find(K key) {
-        DomainDao<O, K> dao = getDao();
+        DomainDaoWrapper<O, K, B> dao = getDao();
         O object = getDao().find(key);
         provider.close();
         

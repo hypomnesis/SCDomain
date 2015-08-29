@@ -61,4 +61,29 @@ abstract class DomainField<K extends DomainObject.Key> extends DbField<K> {
             return new Department.Key(rs.getString(this.getLabel()));
         }
     }
+    
+    static final class ActiveInactiveField extends DbField<Boolean> {
+        ActiveInactiveField(String label) { super(label); }
+        ActiveInactiveField(String label, Boolean fillValue) { super(label, fillValue); }
+        @Override
+        public void setParam(PreparedStatement statement, int index, Boolean value) throws SQLException {
+            statement.setString(index, ( value ? "A" : "I"));
+        }
+        @Override
+        public Boolean getValue(ResultSet rs) throws SQLException {
+            return (rs.getString(this.getLabel()).equals("A"));
+        }
+    }
+    static final class YesNoField extends DbField<Boolean> {
+        YesNoField(String label) { super(label); }
+        YesNoField(String label, Boolean fillValue) { super(label, fillValue); }
+        @Override
+        public void setParam(PreparedStatement statement, int index, Boolean value) throws SQLException {
+            statement.setString(index, ( value ? "Y" : "N"));
+        }
+        @Override
+        public Boolean getValue(ResultSet rs) throws SQLException {
+            return (rs.getString(this.getLabel()).equals("Y"));
+        }
+    }
 }

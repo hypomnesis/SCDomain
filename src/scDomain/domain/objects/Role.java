@@ -12,7 +12,7 @@ package scDomain.domain.objects;
 public final class Role extends AbstractDomainObject<Role> implements DomainObject<Role> {
     private final String id;
     private final String name;
-    private final short level;
+    private final int level;
     private final boolean onScorecard;
     private final String fullName;
     
@@ -28,7 +28,7 @@ public final class Role extends AbstractDomainObject<Role> implements DomainObje
     
     public String getId() { return id; }
     public String getName() { return name; }
-    public short getLevel() { return level; }
+    public int getLevel() { return level; }
     public boolean getOnScorecard() { return onScorecard; }
     public String getFullName() { return fullName; }
     
@@ -45,7 +45,7 @@ public final class Role extends AbstractDomainObject<Role> implements DomainObje
     public static final class Builder extends AbstractDomainObject.Builder<Role> implements DomainObject.Builder<Role> {
         private String id;
         private String name;
-        private short level;
+        private int level;
         private boolean onScorecard;
         
         @Override
@@ -68,7 +68,7 @@ public final class Role extends AbstractDomainObject<Role> implements DomainObje
             this.name = name;
             return this;
         }
-        public Builder level(short level) {
+        public Builder level(int level) {
             this.level = level;
             return this;
         }

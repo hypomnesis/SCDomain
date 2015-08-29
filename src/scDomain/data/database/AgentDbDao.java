@@ -14,12 +14,14 @@ import scDomain.domain.objects.*;
 import scDomain.domain.dao.AgentDao;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 
 final class AgentDbDao extends DomainDbDao<Agent, Agent.Key> implements AgentDao {
     static final String TABLE = "scweb_sc_agents";
     private static final String STRING_FILL = "DUMMY";
     
-    static final DbField.StringField USERNAME = new DbField.StringField("sa_username", STRING_FILL);
+    static final DomainField.AgentField USERNAME = new DomainField.AgentField("sa_username", new Agent.Key(STRING_FILL));
     static final DbField.StringField FIRSTNAME = new DbField.StringField("sa_firstname", STRING_FILL);
     static final DbField.StringField LASTNAME = new DbField.StringField("sa_lastname", STRING_FILL);
     static final DbField.StringField EMAIL = new DbField.StringField("sa_email", STRING_FILL);
@@ -28,23 +30,14 @@ final class AgentDbDao extends DomainDbDao<Agent, Agent.Key> implements AgentDao
     static final DomainField.DeptField DEPARTMENT = new DomainField.DeptField("sa_department", new Department.Key(STRING_FILL));
     static final DomainField.RoleField ROLE = new DomainField.RoleField("sa_role", new Role.Key(STRING_FILL));
     
-    private static final String SELECT_START = "SELECT * FROM " + TABLE + " ";
+    private static final String SELECT_START = "SELECT * FROM " + TABLE;
     
     AgentDbDao(Connection connection) { super(connection); }
     
     @Override
-    protected PreparedStatement findStatement(Agent.Key key) throws SQLException {
-        PreparedStatement findStatement = connection.prepareStatement(
-                SELECT_START + "WHERE " + USERNAME.getLabel() + " = ?"
-        );
-        USERNAME.setParam(findStatement, 1, key.getID());
-        return findStatement;
-    }
-
-    @Override
     Agent load(ResultSet rs) throws SQLException {
         Agent agent = new Agent.Builder().
-                username(USERNAME.getValue(rs)).
+                username(USERNAME.getValue(rs).getID()).
                 firstName(FIRSTNAME.getValue(rs)).
                 lastName(LASTNAME.getValue(rs)).
                 email(EMAIL.getValue(rs)).
@@ -57,20 +50,24 @@ final class AgentDbDao extends DomainDbDao<Agent, Agent.Key> implements AgentDao
         return agent;
     }
     
-    private ArrayList<Agent> privateFindByDeptRoleStatus(Department.Key[] departments, Role.Key[] roles, Boolean status) {
+    @Override
+    public ArrayList<Agent> find(Collection<Agent.Key> keys) {
+        return findMany(new DbField.Values[] { new DbField.Values<Agent.Key>(USERNAME, keys, SELECT_START + " WHERE") });
+    }
+    
+    private ArrayList<Agent> privateFindByDeptRoleStatus(Collection<Department.Key> departments, Collection<Role.Key> roles, Boolean status) {
         DbField.Values<Department.Key> deptValues = null;
         DbField.Values<Role.Key> roleValues = null;
-        StringBuilder sqlStart = new StringBuilder(SELECT_START + "WHERE");
+        StringBuilder sqlStart = new StringBuilder(SELECT_START + " WHERE");
         
         if (status != null) {
             sqlStart.append(" sa_status = ").append(( status ? "'A'" : "'I'" )).append(" AND");
         }
-        
         //TODO can arrays be null?  Can they be empty?  Should I throw exceptions here?
-        if (departments != null && departments.length > 0) {
+        if (departments != null && !departments.isEmpty()) {
             deptValues = new DbField.Values<>(DEPARTMENT, departments, sqlStart.toString());
         }
-        if (roles != null && roles.length > 0) {
+        if (roles != null && !roles.isEmpty()) {
             roleValues = new DbField.Values<>(ROLE, roles, ( deptValues == null ? sqlStart.toString() : " AND" ));
         }
         if (deptValues == null && roleValues == null) {
@@ -88,80 +85,42 @@ final class AgentDbDao extends DomainDbDao<Agent, Agent.Key> implements AgentDao
         return findMany(values);
     }
     @Override
-    public ArrayList<Agent> findByDepartment(Department.Key[] departments) {
-        if (departments == null || departments.length == 0) {
-            throw new IllegalArgumentException();
-        }
+    public ArrayList<Agent> findByDepartment(Collection<Department.Key> departments) {
         return privateFindByDeptRoleStatus(departments, null, null);
     }
     @Override
-    public ArrayList<Agent> findByDepartment(Department.Key departments) {
-        if (departments == null) { throw new NullPointerException(); }
-        
-        return findByDepartment(new Department.Key[] { departments });
-    }
-    @Override
-    public ArrayList<Agent> findByDepartment(Department.Key[] departments, boolean status) {
+    public ArrayList<Agent> findByDepartment(Collection<Department.Key> departments, boolean status) {
         return privateFindByDeptRoleStatus(departments, null, status);
-    }
-    @Override
-    public ArrayList<Agent> findByDepartment(Department.Key departments, boolean status) {
-        if (departments == null) { throw new NullPointerException(); }
-        
-        return findByDepartment(new Department.Key[] { departments }, status);
     }
     
     @Override
-    public ArrayList<Agent> findByDeptRole(Department.Key[] departments, Role.Key[] roles) {
-        if (departments == null || departments.length == 0 || roles == null || roles.length == 0) {
-            throw new IllegalArgumentException();
-        }
+    public ArrayList<Agent> findByDeptRole(Collection<Department.Key> departments, Collection<Role.Key> roles) {
         return privateFindByDeptRoleStatus(departments, roles, null);
     }
     @Override
-    public ArrayList<Agent> findByDeptRole(Department.Key departments, Role.Key[] roles) {
-        if (departments == null) { throw new NullPointerException(); }
-        
-        return findByDeptRole(new Department.Key[] { departments }, roles);
-    }
-    @Override
-    public ArrayList<Agent> findByDeptRole(Department.Key[] departments, Role.Key roles) {
-        if (roles == null) { throw new NullPointerException(); }
-        
-        return findByDeptRole(departments, new Role.Key[] { roles });
-    }
-    @Override
-    public ArrayList<Agent> findByDeptRole(Department.Key departments, Role.Key roles) {
-        if (departments == null || roles == null) {
-            throw new NullPointerException();
-        }
-        return findByDeptRole(new Department.Key[] { departments }, new Role.Key[] { roles });
-    }
-    @Override
-    public ArrayList<Agent> findByDeptRole(Department.Key[] departments, Role.Key[] roles, boolean status) {
-        if (departments == null || departments.length == 0 || roles == null || roles.length == 0) {
-            throw new IllegalArgumentException();
-        }
+    public ArrayList<Agent> findByDeptRole(Collection<Department.Key> departments, Collection<Role.Key> roles, boolean status) {
         return privateFindByDeptRoleStatus(departments, roles, status);
     }
     @Override
-    public ArrayList<Agent> findByDeptRole(Department.Key departments, Role.Key[] roles, boolean status) {
-        if (departments == null) { throw new NullPointerException(); }
+    public HashMap<Department.Key, Integer> getDeptLevels(Agent.Key key) {
+        HashMap<Department.Key, Integer> deptLevels = new HashMap<>();
         
-        return findByDeptRole(new Department.Key[] { departments }, roles, status);
-    }
-    @Override
-    public ArrayList<Agent> findByDeptRole(Department.Key[] departments, Role.Key roles, boolean status) {
-        if (roles == null) { throw new NullPointerException(); }
-        
-        return findByDeptRole(departments, new Role.Key[] { roles }, status);
-    }
-    @Override
-    public ArrayList<Agent> findByDeptRole(Department.Key departments, Role.Key roles, boolean status) {
-        if (departments == null || roles == null) {
-            throw new NullPointerException();
+        try (PreparedStatement statement = connection.prepareStatement(
+                "SELECT vdr_department, MAX(vdr_level) max_level FROM scweb_vw_dept_roles WHERE vdr_username = ?;"
+        );) {
+            statement.setString(1, key.getID());
+            
+            try (ResultSet rs = statement.executeQuery();) {
+                while (rs.next()) {
+                    deptLevels.put(new Department.Key(rs.getString("vdr_department")), rs.getInt("max_level"));
+                }
+            } catch (SQLException e) {
+                //something.
+            }
+        } catch (SQLException e) {
+            //something
         }
-        return findByDeptRole(new Department.Key[] { departments }, new Role.Key[] { roles }, status);
+        return deptLevels;
     }
     
     //All this TODO!!!

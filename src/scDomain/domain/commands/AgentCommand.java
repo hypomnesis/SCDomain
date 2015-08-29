@@ -12,7 +12,11 @@ import scDomain.domain.objects.Agent;
  *
  * @author Morgan
  */
-public class AgentCommand extends DomainCommand<Agent, Agent.Key> {
+public class AgentCommand extends DomainCommand<Agent, Agent.Key, Agent.Builder> {
+    private final DomainDaoFactory.AgentDaoWrapper mapper;
+    
+    private AgentCommand() { mapper = provider.getAgentDao(); }
+    
     @Override
-    public AgentDao getDao() { return provider.getAgentDao(); }
+    DomainDaoFactory.AgentDaoWrapper getDao() { return provider.getAgentDao(); }
 }

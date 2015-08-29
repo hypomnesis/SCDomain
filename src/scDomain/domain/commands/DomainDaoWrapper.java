@@ -3,8 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package scDomain.domain.dao;
+package scDomain.domain.commands;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import scDomain.domain.dao.DomainDao;
 import scDomain.domain.objects.DomainObject;
 
 /**
@@ -14,7 +17,6 @@ import scDomain.domain.objects.DomainObject;
 abstract class DomainDaoWrapper<O extends DomainObject<O>, K extends DomainObject.Key<O>, B extends DomainObject.Builder<O>>
         implements DomainDao<O, K>
 {
-    private final DomainDao<O, K> mapper;
     protected final DomainObject.Type.Pool<O> pool;
     
     private DomainDaoWrapper() { throw new AbstractMethodError(); }
@@ -22,25 +24,40 @@ abstract class DomainDaoWrapper<O extends DomainObject<O>, K extends DomainObjec
         if (mapper == null || pool == null) {
             throw new NullPointerException();
         }
-        this.mapper = mapper;
         this.pool = pool;
     }
+    
     @Override
     public O find(K key) {
         if (key == null) { throw new NullPointerException(); }
         O object = pool.get(key);
         
-        if (object == null) { object = mapper.find(key); }
+        if (object == null) { object = this.getMapper().find(key); }
         
         return object;
     }
-    DomainDao<O, K> getMapper() { return mapper; }
-    //can't think of a way to port the load or doLoad up here to enforce this functionality.
-    //I was told to check again after pulling data but before loading.. i forget why.  Look up and document.
-    /*@Override
-    protected B doFind(K key) { return mapper.doFind(key); }
     @Override
-    protected O load(B builder) { return mapper.load(builder); }*/
+    public ArrayList<O> find(Collection<K> keys) {
+        if (keys == null || keys.isEmpty()) { throw new NullPointerException(); }
+        
+        ArrayList<O> objects = new ArrayList<>(keys.size());
+        ArrayList<K> notFound = new ArrayList<>(keys.size());
+        
+        for (K key : keys) {
+            O object = pool.get(key);
+            
+            if (object == null) {
+                notFound.add(key);
+            } else {
+                objects.add(object);
+            }
+        }
+        if (!notFound.isEmpty()) {
+            objects.addAll(this.getMapper().find(notFound));
+        }
+        return objects;
+    }
+    abstract DomainDao<O, K> getMapper();
     
     static abstract class FindAll<O extends DomainObject<O>, K extends DomainObject.Key<O>, B extends DomainObject.Builder<O>>
             extends DomainDaoWrapper<O, K, B> implements DomainDao.FindAll<O, K>
@@ -53,7 +70,7 @@ abstract class DomainDaoWrapper<O extends DomainObject<O>, K extends DomainObjec
         }
         
         @Override
-        public O[] findAll() {
+        public ArrayList<O> findAll() {
             return finder.findAll();
         }
         static abstract class Only<O extends DomainObject<O>, K extends DomainObject.Key<O>, B extends DomainObject.Builder<O>>

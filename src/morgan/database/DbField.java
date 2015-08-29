@@ -11,6 +11,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Iterator;
 
 /**
@@ -58,12 +59,12 @@ public abstract class DbField<T> {
     
     public static class Values<T> {
         private final DbField<T> field;
-        private final T[] values;
+        private final Collection<T> values;
         private final String sqlPrepend;
         private int placeHolder;
         private int lastBatch;
 
-        public Values(DbField<T> field, T[] values, String sqlPrepend) {
+        public Values(DbField<T> field, Collection<T> values, String sqlPrepend) {
             this.field = field;
             this.values = values;
             this.sqlPrepend = sqlPrepend;
@@ -115,18 +116,24 @@ public abstract class DbField<T> {
         }
         
         private BatchCriterion getBatch() {
-            int targetSize = values.length - placeHolder;
+            int targetSize = values.size() - placeHolder;
 
             return new BatchCriterion(( targetSize < 0 ? 0 : targetSize ));
         }
         private int setStatementParams(PreparedStatement statement, BatchCriterion batch, int paramStart) throws SQLException {
-            for (int i = 0; i < batch.size; i++) {
-                field.setParam(statement, i + paramStart, ( (i + placeHolder) >= values.length ? field.fillValue : values[i + placeHolder] ));
+            int i = 0;
+            
+            for (T value : values) {
+                field.setParam(statement, i + paramStart, value);
+                i++;
+            }
+            for (int j = i; j < batch.size; j++) {
+                field.setParam(statement, j + paramStart, field.fillValue);
             }
             lastBatch = batch.size;
             return lastBatch;
         }
-        public boolean isComplete() { return placeHolder >= values.length; }
+        public boolean isComplete() { return placeHolder >= values.size(); }
         public void increment() { placeHolder += lastBatch; }
         public void reset() { placeHolder = 0; }
     }
@@ -135,7 +142,7 @@ public abstract class DbField<T> {
         public final int size;
         
         private static final int SINGLE_BATCH = 1;
-        private static final int SMALL_BATCH = 17;
+        private static final int SMALL_BATCH = 13;
         private static final int MEDIUM_BATCH = 53;
         private static final int LARGE_BATCH = 137;
         
@@ -148,6 +155,8 @@ public abstract class DbField<T> {
         }
         @Override
         public String toString() {
+            if (size == 1) { return " = ?"; }
+            
             StringBuilder builder = new StringBuilder(" In ( ");
             
             for (int i = 0; i < size; i++) {
@@ -168,6 +177,32 @@ public abstract class DbField<T> {
         @Override
         public String getValue(ResultSet rs) throws SQLException {
             return rs.getString(this.getLabel());
+        }
+    }
+    public static final class IntegerField extends DbField<Integer> {
+        public IntegerField(String label) { super(label); }
+        public IntegerField(String label, Integer fillValue) { super(label, fillValue); }
+        @Override
+        public void setParam(PreparedStatement statement, int index, Integer value) throws SQLException {
+            if (value == null) { throw new NullPointerException(); }
+            statement.setInt(index, value);
+        }
+        @Override
+        public Integer getValue(ResultSet rs) throws SQLException {
+            return rs.getInt(this.getLabel());
+        }
+    }
+    public static final class BooleanField extends DbField<Boolean> {
+        public BooleanField(String label) { super(label); }
+        public BooleanField(String label, Boolean fillValue) { super(label, fillValue); }
+        @Override
+        public void setParam(PreparedStatement statement, int index, Boolean value) throws SQLException {
+            if (value == null) { throw new NullPointerException(); }
+            statement.setBoolean(index, value);
+        }
+        @Override
+        public Boolean getValue(ResultSet rs) throws SQLException {
+            return rs.getBoolean(this.getLabel());
         }
     }
 }
