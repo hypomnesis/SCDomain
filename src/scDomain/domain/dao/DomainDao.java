@@ -19,13 +19,13 @@ public interface DomainDao <O extends DomainObject<O>, K extends DomainObject.Ke
     public O find(K key);
     public ArrayList<O> find(Collection<K> key);
     
-    interface FindAll <O extends DomainObject<O>, K extends DomainObject.Key<O>> extends DomainDao<O, K> {
+    interface FindAll <O extends DomainObject<O>, K extends DomainObject.Key<O>>
+    extends DomainDao<O, K> {
         public ArrayList<O> findAll();
     }
     
     interface Updater <O extends DomainObject<O>, K extends DomainObject.Key<O>, B extends DomainObject.Builder<O>>
-            extends DomainDao<O, K>
-    {
+    extends DomainDao<O, K> {
         public O add(O object);
         public O add(B builder);
         public O update(O object);

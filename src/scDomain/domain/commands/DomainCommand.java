@@ -5,6 +5,7 @@
  */
 package scDomain.domain.commands;
 
+import scDomain.domain.dao.DomainDaoFactory;
 import scDomain.domain.dao.*;
 import scDomain.domain.objects.DomainObject;
 
@@ -18,9 +19,9 @@ import scDomain.domain.objects.DomainObject;
 public abstract class DomainCommand<O extends DomainObject<O>, K extends DomainObject.Key<O>, B extends DomainObject.Builder<O>> {
     protected static final DomainDaoFactory provider = DomainDaoFactory.INSTANCE;
     
-    abstract DomainDaoWrapper<O, K, B> getDao();
+    abstract DomainDao<O, K> getDao();
     public O find(K key) {
-        DomainDaoWrapper<O, K, B> dao = getDao();
+        DomainDao<O, K> dao = getDao();
         O object = getDao().find(key);
         provider.close();
         

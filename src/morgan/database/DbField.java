@@ -5,14 +5,8 @@
  */
 package morgan.database;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Iterator;
+import java.sql.*;
+import java.util.*;
 
 /**
  *
@@ -20,18 +14,15 @@ import java.util.Iterator;
  * @param <T>
  */
 public abstract class DbField<T> {
-    private final String label;
     private final T fillValue;
     
-    public DbField(String label, T fillValue) {
-        this.label = label;
+    public DbField() { fillValue = null; }
+    public DbField(T fillValue) {
         this.fillValue = fillValue;
     }
-    public DbField(String label) { this(label, null); }
-    
-    public String getLabel() {  return label; }
     /*@Override
     public Class<T> getType() { return type; }*/
+    public abstract String getLabel();
     public abstract void setParam(PreparedStatement statement, int index, T value) throws SQLException;
     public abstract T getValue(ResultSet rs) throws SQLException;
     
@@ -104,7 +95,7 @@ public abstract class DbField<T> {
             
             for (int i = 0; i < pairings.length; i++) {
                 batches[i] = pairings[i].getBatch();
-                builder.append(pairings[i].sqlPrepend).append(" ").append(pairings[i].field.label).append(batches[i].toString());
+                builder.append(pairings[i].sqlPrepend).append(" ").append(pairings[i].field.getLabel()).append(batches[i].toString());
             }
             PreparedStatement statement = connection.prepareStatement(builder.toString());
             
@@ -167,7 +158,19 @@ public abstract class DbField<T> {
         }
     }
     
-    public static final class StringField extends DbField<String> {
+    public static abstract class SingleField<T> extends DbField<T> {
+        private final String label;
+        
+        public SingleField(String label) { this(label, null); }
+        public SingleField(String label, T fillValue) {
+            super(fillValue);
+            this.label = label;
+        }
+        
+        public String getLabel() {  return label; }
+    }
+    
+    public static final class StringField extends SingleField<String> {
         public StringField(String label) { super(label); }
         public StringField(String label, String fillValue) { super(label, fillValue); }
         @Override
@@ -179,7 +182,7 @@ public abstract class DbField<T> {
             return rs.getString(this.getLabel());
         }
     }
-    public static final class IntegerField extends DbField<Integer> {
+    public static final class IntegerField extends SingleField<Integer> {
         public IntegerField(String label) { super(label); }
         public IntegerField(String label, Integer fillValue) { super(label, fillValue); }
         @Override
@@ -192,17 +195,58 @@ public abstract class DbField<T> {
             return rs.getInt(this.getLabel());
         }
     }
-    public static final class BooleanField extends DbField<Boolean> {
+    public static final class LongField extends SingleField<Long> {
+        public LongField(String label) { super(label); }
+        public LongField(String label, Long fillValue) { super(label, fillValue); }
+        @Override
+        public void setParam(PreparedStatement statement, int index, Long value) throws SQLException {
+            if (value == null) { throw new NullPointerException(); }
+            statement.setLong(index, value);
+        }
+        @Override
+        public Long getValue(ResultSet rs) throws SQLException {
+            return rs.getLong(this.getLabel());
+        }
+    }
+    public static final class FloatField extends SingleField<Float> {
+        public FloatField(String label) { super(label); }
+        public FloatField(String label, Float fillValue) { super(label, fillValue); }
+        @Override
+        public void setParam(PreparedStatement statement, int index, Float value) throws SQLException {
+            if (value == null) { throw new NullPointerException(); }
+            statement.setFloat(index, value);
+        }
+        @Override
+        public Float getValue(ResultSet rs) throws SQLException {
+            return rs.getFloat(this.getLabel());
+        }
+    }
+    public static final class BooleanField extends SingleField<Boolean> {
         public BooleanField(String label) { super(label); }
         public BooleanField(String label, Boolean fillValue) { super(label, fillValue); }
         @Override
         public void setParam(PreparedStatement statement, int index, Boolean value) throws SQLException {
             if (value == null) { throw new NullPointerException(); }
             statement.setBoolean(index, value);
+            //When do I want to check for nulls.  may put insistNotNull in constructor.
         }
         @Override
         public Boolean getValue(ResultSet rs) throws SQLException {
             return rs.getBoolean(this.getLabel());
+        }
+    }
+    public static final class GregCalField extends SingleField<GregorianCalendar> {
+        public GregCalField(String label) { super(label); }
+        public GregCalField(String label, GregorianCalendar fillValue) { super(label, fillValue); }
+        @Override
+        public void setParam(PreparedStatement statement, int index, GregorianCalendar value) throws SQLException {
+            statement.setTimestamp(index, new Timestamp(value.getTimeInMillis()));
+        }
+        @Override
+        public GregorianCalendar getValue(ResultSet rs) throws SQLException {
+            GregorianCalendar date = new GregorianCalendar();
+            date.setTimeInMillis(rs.getTime(this.getLabel()).getTime());
+            return date;
         }
     }
 }

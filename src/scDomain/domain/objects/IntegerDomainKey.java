@@ -8,17 +8,18 @@ package scDomain.domain.objects;
 /**
  *
  * @author Morgan
+ * @param <O>
  */
-abstract class LongDomainKey<O extends AbstractDomainObject<O>> extends SingleDomainKey<Long, O> {
-    public LongDomainKey(Long id) { super(id); }
-    LongDomainKey(AbstractDomainObject.Builder<O> builder) { super(builder); }
+abstract class IntegerDomainKey<O extends AbstractDomainObject<O>> extends SingleDomainKey<Integer, O> {
+    public IntegerDomainKey(Integer id) { super(id); }
+    IntegerDomainKey(AbstractDomainObject.Builder<O> builder) { super(builder); }
     
-    public Long getID() { return id; }
+    public Integer getID() { return id; }
     @Override
     //Super checks parameter type.
     public final boolean equals(Object object) {
         if (!super.equals(object)) { return false; }
         
-        return this.id.equals(((LongDomainKey) object).id);
+        return this.id.equals(((IntegerDomainKey) object).id);
     }
 }

@@ -19,16 +19,16 @@ import java.util.HashMap;
 
 final class AgentDbDao extends DomainDbDao<Agent, Agent.Key> implements AgentDao {
     static final String TABLE = "scweb_sc_agents";
-    private static final String STRING_FILL = "DUMMY";
+    private static final String STRING_FILL = "<<DUMMY>>";
     
-    static final DomainField.AgentField USERNAME = new DomainField.AgentField("sa_username", new Agent.Key(STRING_FILL));
+    static final DomainField.AgentField USERNAME = new DomainField.AgentField("sa_username");
     static final DbField.StringField FIRSTNAME = new DbField.StringField("sa_firstname", STRING_FILL);
     static final DbField.StringField LASTNAME = new DbField.StringField("sa_lastname", STRING_FILL);
     static final DbField.StringField EMAIL = new DbField.StringField("sa_email", STRING_FILL);
-    static final DomainField.AgentField TEAMLEAD = new DomainField.AgentField("sa_lead", new Agent.Key(STRING_FILL));
-    static final DomainField.AgentField SUPERVISOR = new DomainField.AgentField("sa_supervisor", new Agent.Key(STRING_FILL));
-    static final DomainField.DeptField DEPARTMENT = new DomainField.DeptField("sa_department", new Department.Key(STRING_FILL));
-    static final DomainField.RoleField ROLE = new DomainField.RoleField("sa_role", new Role.Key(STRING_FILL));
+    static final DomainField.AgentField TEAMLEAD = new DomainField.AgentField("sa_lead");
+    static final DomainField.AgentField SUPERVISOR = new DomainField.AgentField("sa_supervisor");
+    static final DomainField.DeptField DEPARTMENT = new DomainField.DeptField("sa_department");
+    static final DomainField.RoleField ROLE = new DomainField.RoleField("sa_role");
     
     private static final String SELECT_START = "SELECT * FROM " + TABLE;
     

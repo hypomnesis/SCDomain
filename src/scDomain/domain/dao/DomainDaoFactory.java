@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package scDomain.domain.commands;
+package scDomain.domain.dao;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -39,15 +39,35 @@ public enum DomainDaoFactory implements DomainDaoProvider {
     }
     
     @Override
-    public AgentDaoWrapper getAgentDao() {
+    public AgentDao getAgentDao() {
         if (provider == null) { throw new NullPointerException(); }
         AgentDao dao = provider.getAgentDao();
         return new AgentDaoWrapper(dao, DomainObject.Type.AGENT.pool);
     }
     @Override
-    public RoleDaoWrapper getRoleDao() {
+    public RoleDao getRoleDao() {
         if (provider == null) { throw new NullPointerException(); }
         return new RoleDaoWrapper(provider.getRoleDao(), DomainObject.Type.ROLE.pool);
+    }
+    @Override
+    public DepartmentDao getDepartmentDao() {
+        if (provider == null) { throw new NullPointerException(); }
+        return new DepartmentDaoWrapper(provider.getDepartmentDao(), DomainObject.Type.DEPARTMENT.pool);
+    }
+    @Override
+    public TimeSlotDao getTimeSlotDao() {
+        if (provider == null) { throw new NullPointerException(); }
+        return new TimeSlotDaoWrapper(provider.getTimeSlotDao(), DomainObject.Type.TIME_SLOT.pool);
+    }
+    @Override
+    public TimeSlotDao.CategoryDao getTimeSlotCategoryDao() {
+        if (provider == null) { throw new NullPointerException(); }
+        return new TimeSlotDaoWrapper.CategoryWrapper(provider.getTimeSlotCategoryDao(), DomainObject.Type.TIME_SLOT.pool);
+    }
+    @Override
+    public TimeSlotDao.TypeDao getTimeSlotTypeDao() {
+        if (provider == null) { throw new NullPointerException(); }
+        return new TimeSlotDaoWrapper.TypeWrapper(provider.getTimeSlotTypeDao(), DomainObject.Type.TIME_SLOT.pool);
     }
     
     public final static class AgentDaoWrapper extends DomainDaoWrapper.Updater<Agent, Agent.Key, Agent.Builder> implements AgentDao {
@@ -144,5 +164,59 @@ public enum DomainDaoFactory implements DomainDaoProvider {
             super(mapper, pool);
             this.mapper = mapper;
         }
+    }
+    public final static class DepartmentDaoWrapper extends DomainDaoWrapper.FindAll<Department, Department.Key, Department.Builder>
+    implements DepartmentDao {
+        private final DepartmentDao mapper;
+        
+        @Override
+        DepartmentDao getMapper() { return mapper; }
+        private DepartmentDaoWrapper(DepartmentDao mapper, DomainObject.Type.Pool<Department> pool) {
+            super(mapper, pool);
+            this.mapper = mapper;
+        }
+    }
+    public final static class TimeSlotDaoWrapper extends DomainDaoWrapper.Updater<TimeSlot, TimeSlot.Key, TimeSlot.Builder>
+    implements TimeSlotDao {
+        private final TimeSlotDao mapper;
+        
+        @Override
+        TimeSlotDao getMapper() { return mapper; }
+        private TimeSlotDaoWrapper(TimeSlotDao mapper, DomainObject.Type.Pool<TimeSlot> pool) {
+            super(mapper, pool);
+            this.mapper = mapper;
+        }
+        @Override
+        public ArrayList<TimeSlot> findByAgent(Agent.Key agent) {
+            if (agent == null) { throw new NullPointerException(); }
+            return mapper.findByAgent(agent);
+        }
+        @Override
+        public ArrayList<TimeSlot> findByDepartment(Department.Key department) {
+            if (department == null) { throw new NullPointerException(); }
+            return mapper.findByDepartment(department);
+        }
+            public final static class CategoryWrapper extends DomainDaoWrapper.FindAll.Only<TimeSlot.Category, TimeSlot.Category.Key, TimeSlot.Category.Builder>
+            implements TimeSlotDao.CategoryDao {
+                private final TimeSlotDao.CategoryDao mapper;
+
+                @Override
+                TimeSlotDao.CategoryDao getMapper() { return mapper; }
+                private CategoryWrapper(TimeSlotDao.CategoryDao mapper, DomainObject.Type.Pool<TimeSlot.Category> pool) {
+                    super(mapper, pool);
+                    this.mapper = mapper;
+                }
+            }
+            public final static class TypeWrapper extends DomainDaoWrapper.FindAll.Only<TimeSlot.Type, TimeSlot.Type.Key, TimeSlot.Type.Builder>
+            implements TimeSlotDao.TypeDao {
+                private final TimeSlotDao.TypeDao mapper;
+
+                @Override
+                TimeSlotDao.TypeDao getMapper() { return mapper; }
+                private TypeWrapper(TimeSlotDao.TypeDao mapper, DomainObject.Type.Pool<TimeSlot.Type> pool) {
+                    super(mapper, pool);
+                    this.mapper = mapper;
+                }
+            }
     }
 }

@@ -70,4 +70,22 @@ public enum DbDaoProvider implements DomainDaoProvider {
         validateConnection();
         return new RoleDbDao(connection);
     }
+    @Override
+    public DepartmentDao getDepartmentDao() {
+        validateConnection();
+        return new DepartmentDbDao(connection);
+    }
+    @Override
+    public TimeSlotDao getTimeSlotDao() {
+        validateConnection();
+        return new TimeSlotDbDao(connection);
+    }
+    public TimeSlotDao.CategoryDao getTimeSlotCategoryDao() {
+        validateConnection();
+        return new TimeSlotDbDao.CategoryDbDao(connection);
+    }
+    public TimeSlotDao.TypeDao getTimeSlotTypeDao() {
+        validateConnection();
+        return new TimeSlotDbDao.TypeDbDao(connection);
+    }
 }

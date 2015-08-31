@@ -25,7 +25,9 @@ public interface DomainObject<O extends DomainObject<O>> {
         AGENT(new Pool<Agent>(false)),
         DEPARTMENT(new Pool<Department>(true)),
         ROLE(new Pool<Role>(true)),
-        TIME_SLOT(new Pool<TimeSlot>(false));
+        TIME_SLOT(new Pool<TimeSlot>(false)),
+        TIME_SLOT_CATEGORY(new Pool<TimeSlot.Category>(true)),
+        TIME_SLOT_TYPE(new Pool<TimeSlot.Type>(true));
         
         private static final ArrayList<DomainObject> permPool = new ArrayList<>(50);
         

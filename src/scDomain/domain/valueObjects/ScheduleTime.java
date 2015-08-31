@@ -8,7 +8,7 @@ public final class ScheduleTime implements Comparable<ScheduleTime> {
     private int hourOfDay;
     
     public static int calculateHourOfDay(int hour, int minute) {
-        int hourOfDay = hour % 24;
+        int hourOfDay = (hour + (minute / 60)) % 24;
         
         if (hourOfDay < 0) { hourOfDay = hour - hourOfDay; }
         

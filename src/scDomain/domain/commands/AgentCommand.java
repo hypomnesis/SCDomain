@@ -5,7 +5,9 @@
  */
 package scDomain.domain.commands;
 
+import scDomain.domain.dao.DomainDaoFactory;
 import scDomain.domain.dao.AgentDao;
+import scDomain.domain.objects.User;
 import scDomain.domain.objects.Agent;
 
 /**
@@ -13,7 +15,7 @@ import scDomain.domain.objects.Agent;
  * @author Morgan
  */
 public class AgentCommand extends DomainCommand<Agent, Agent.Key, Agent.Builder> {
-    private final DomainDaoFactory.AgentDaoWrapper mapper;
+    private final AgentDao mapper;
     
     private AgentCommand() { mapper = provider.getAgentDao(); }
     

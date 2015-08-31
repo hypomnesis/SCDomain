@@ -17,4 +17,8 @@ public interface DomainDaoProvider {
     public void rollback();
     public AgentDao getAgentDao();
     public RoleDao getRoleDao();
+    public DepartmentDao getDepartmentDao();
+    public TimeSlotDao getTimeSlotDao();
+    public TimeSlotDao.CategoryDao getTimeSlotCategoryDao();
+    public TimeSlotDao.TypeDao getTimeSlotTypeDao();
 }

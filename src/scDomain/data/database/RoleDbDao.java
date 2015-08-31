@@ -20,7 +20,7 @@ final class RoleDbDao extends DomainDbDao.FindAll<Role, Role.Key> implements Rol
     static final String TABLE = "scweb_sc_roles";
     private static final String STRING_FILL = "DUMMY";
     
-    static final DomainField.RoleField ID = new DomainField.RoleField("sr_role", new Role.Key(STRING_FILL));
+    static final DomainField.RoleField ID = new DomainField.RoleField("sr_role");
     static final DbField.StringField NAME = new DbField.StringField("sr_name", STRING_FILL);
     static final DbField.IntegerField LEVEL = new DbField.IntegerField("sr_level", -1);
     static final DomainField.YesNoField SCORECARD = new DomainField.YesNoField("sr_scorecard", false);

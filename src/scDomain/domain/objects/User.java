@@ -4,10 +4,12 @@
  * and open the template in the editor.
  */
 
-package scDomain.domain.dao;
+package scDomain.domain.objects;
 
 import java.util.HashMap;
-import scDomain.domain.commands.DomainDaoFactory;
+import scDomain.domain.dao.DomainDaoFactory;
+import scDomain.domain.dao.AgentDao;
+import scDomain.domain.dao.DomainDaoProvider;
 import scDomain.domain.objects.*;
 
 /**
@@ -17,8 +19,8 @@ import scDomain.domain.objects.*;
 public class User {
     private static User instance = null;
     private final Agent agent;
-    private final DomainDaoFactory factory = DomainDaoFactory.INSTANCE;
     private final HashMap<Department.Key, Integer> deptLevels;
+    public final DomainDaoProvider factory = DomainDaoFactory.INSTANCE;
     
     public static final User setUser(String username, DomainDaoProvider provider) {
         if (instance != null) { throw new IllegalStateException(); } // or just return user?
@@ -34,7 +36,7 @@ public class User {
         if (provider == null || username == null || username.length() == 0) {
             throw new IllegalArgumentException();
         }
-        factory.setProvider(provider);
+        DomainDaoFactory.INSTANCE.setProvider(provider);
         
         AgentDao dao = factory.getAgentDao();
         Agent.Key key = new Agent.Key(username);
@@ -45,5 +47,12 @@ public class User {
         }
         deptLevels = dao.getDeptLevels(key);
         factory.close();
+    }
+    
+    public Integer getDeptLevel(Department.Key department) {
+        return deptLevels.get(department);
+    }
+    public <O extends DomainObject<O>, B extends DomainObject.Builder<O>> O getObjectFromBuilder(B builder) {
+        return builder.getObject();
     }
 }
